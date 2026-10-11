@@ -1,0 +1,3904 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MotoKaizen — Sistema de Financiamiento Colectivo</title>
+<style>
+/* ─── RESET & CORPORATE BANKING THEME ──────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.document-camera.is-fullscreen #btnContinueDocument {
+  order: 4;
+}
+
+:root {
+  --bg-app: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-subtle: #f1f5f9;
+  --bg-muted: #e2e8f0;
+  
+  --border-light: #e2e8f0;
+  --border-medium: #cbd5e1;
+  --border-dark: #94a3b8;
+  
+  --brand-navy: #0f172a;
+  --brand-navy-light: #1e293b;
+  --brand-blue: #334155;
+  --brand-blue-hover: #1f2937;
+  --brand-orange: #1f2937;
+  --brand-orange-hover: #111827;
+  --brand-orange-subtle: #f3f4f6;
+  --brand-green: #059669;
+  --brand-green-subtle: #ecfdf5;
+  
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-light: #94a3b8;
+  
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+  --shadow-card: 0 2px 8px rgba(15, 23, 42, 0.06);
+  
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+}
+
+body {
+  background-color: var(--bg-app);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── HEADER INSTITUCIONAL ────────────────────────────────── */
+header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 72px;
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  gap: 1.5rem;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  cursor: pointer;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.brand-badge {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--brand-navy) 0%, var(--brand-navy-light) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2);
+}
+
+.brand-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-title {
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: var(--brand-navy);
+  line-height: 1.1;
+}
+
+.brand-title span {
+  color: var(--brand-orange);
+}
+
+ {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+/* STEPPER BANCARIO FORMAL */
+.bank-stepper {
+  flex: 1;
+  max-width: 780px;
+  display: flex;
+  align-items: center;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: 9999px;
+  padding: 0.3rem 0.4rem;
+}
+
+.step-item {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.step-item.active {
+  background: #ffffff;
+  color: var(--brand-navy);
+  box-shadow: var(--shadow-sm);
+  font-weight: 700;
+}
+
+.step-item.done {
+  color: var(--brand-green);
+}
+
+.step-badge {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  color: #ffffff;
+  font-size: 0.7rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.step-item.active .step-badge {
+  background: var(--brand-orange);
+}
+
+.step-item.done .step-badge {
+  background: var(--brand-green);
+}
+
+.btn-header-reset {
+  margin-left: auto;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  background: #ffffff;
+  border: 1px solid var(--border-medium);
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-header-reset:hover {
+  background: var(--bg-subtle);
+  color: var(--brand-navy);
+  border-color: var(--border-dark);
+}
+
+/* ─── CONTENEDOR PRINCIPAL ────────────────────────────────── */
+main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem;
+}
+
+.screen-view {
+  display: none;
+  animation: fadeIn 0.25s ease-out both;
+}
+
+.screen-view.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ENCABEZADOS DE PANTALLA */
+.section-banner {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+ {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.9rem;
+  border-radius: 9999px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 0.85rem;
+}
+
+.section-tag.green {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: var(--brand-green);
+}
+
+.section-title {
+  font-size: clamp(1.75rem, 3.5vw, 2.35rem);
+  font-weight: 800;
+  color: var(--brand-navy);
+  letter-spacing: -0.02em;
+  margin-bottom: 0.6rem;
+}
+
+.section-desc {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 620px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* BOTONES CORPORATIVOS */
+.btn-bank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.75rem;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.btn-bank-primary {
+  background: var(--brand-orange);
+  color: #ffffff;
+  box-shadow: 0 2px 4px rgba(234, 88, 12, 0.25);
+}
+
+.btn-bank-primary:hover {
+  background: var(--brand-orange-hover);
+  box-shadow: 0 4px 10px rgba(234, 88, 12, 0.35);
+}
+
+.btn-bank-outline {
+  background: #ffffff;
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border-medium);
+}
+
+.btn-bank-outline:hover {
+  background: var(--bg-subtle);
+  color: var(--brand-navy);
+  border-color: var(--border-dark);
+}
+
+.btn-bank-green {
+  background: var(--brand-green);
+  color: #ffffff;
+}
+
+.btn-bank-green:hover {
+  background: #047857;
+}
+
+.btn-bank-lg {
+  padding: 1.05rem 2.4rem;
+  font-size: 1.05rem;
+  border-radius: var(--radius-lg);
+}
+
+/* ─── PANTALLA 1: CATÁLOGO DE MOTOS ───────────────────────── */
+.bikes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 1.5rem;
+}
+
+.bike-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.bike-card:hover {
+  border-color: var(--brand-orange);
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.1), 0 0 0 1px var(--brand-orange);
+  transform: translateY(-4px);
+}
+
+.bike-img-header {
+  height: 210px;
+  background: #f1f5f9;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.bike-img-header img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+
+.bike-card:hover .bike-img-header img {
+  transform: scale(1.05);
+}
+
+ {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: #ffffff;
+  color: var(--brand-navy);
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-light);
+}
+
+.bike-content {
+  padding: 1.5rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.bike-brand {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: var(--brand-orange);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.25rem;
+}
+
+.bike-model {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--brand-navy);
+  margin-bottom: 1rem;
+}
+
+.bike-specs-table {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.spec-cell {
+  text-align: center;
+}
+
+.spec-cell label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.15rem;
+}
+
+.spec-cell strong {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--brand-navy);
+}
+
+.bike-financial-row {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.price-contado label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-weight: 700;
+  display: block;
+}
+
+.price-contado strong {
+  font-size: 1.05rem;
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.price-cuota {
+  text-align: right;
+}
+
+.price-cuota label {
+  font-size: 0.68rem;
+  color: var(--brand-orange);
+  font-weight: 800;
+  text-transform: uppercase;
+  display: block;
+}
+
+.price-cuota strong {
+  font-size: 1.35rem;
+  font-weight: 900;
+  color: var(--brand-navy);
+}
+
+.btn-select-bike {
+  width: 100%;
+  padding: 0.85rem;
+  border-radius: var(--radius-md);
+  background: var(--bg-subtle);
+  color: var(--brand-navy);
+  border: 1.5px solid var(--border-medium);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.bike-card:hover .btn-select-bike {
+  background: var(--brand-orange);
+  color: #ffffff;
+  border-color: var(--brand-orange);
+}
+
+/* ─── PANTALLA 2: CONFIGURACIÓN DEL PLAN ──────────────────── */
+.plan-split {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.plan-preview-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  position: sticky;
+  top: 90px;
+}
+
+.plan-preview-box img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  background: #f1f5f9;
+}
+
+.plan-preview-content {
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.config-form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.config-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-card);
+}
+
+.config-card-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  color: var(--brand-navy);
+  letter-spacing: 0.06em;
+  margin-bottom: 1rem;
+}
+
+.frequency-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.freq-card {
+  border: 2px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  background: var(--bg-subtle);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.freq-card:hover {
+  border-color: var(--border-dark);
+}
+
+.freq-card.active {
+  border-color: var(--brand-orange);
+  background: var(--brand-orange-subtle);
+}
+
+.freq-radio {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border-medium);
+  margin-bottom: 0.75rem;
+  background: #ffffff;
+}
+
+.freq-card.active .freq-radio {
+  border-color: var(--brand-orange);
+  background: var(--brand-orange);
+  box-shadow: inset 0 0 0 3px #ffffff;
+}
+
+.freq-card-name {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: var(--brand-navy);
+  margin-bottom: 0.35rem;
+}
+
+.freq-card-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.cuota-statement-box {
+  background: #ffffff;
+  border: 2px solid #d1d5db;
+  border-radius: var(--radius-xl);
+  padding: 2rem;
+  text-align: center;
+  box-shadow: var(--shadow-md);
+}
+
+ {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--brand-orange);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.35rem;
+}
+
+.cuota-amount {
+  font-size: 3.2rem;
+  font-weight: 900;
+  color: var(--brand-navy);
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+}
+
+.cuota-tag-sub {
+  font-size: 0.85rem;
+  color: var(--brand-green);
+  font-weight: 700;
+}
+
+.bank-versus-row {
+  margin-top: 1.25rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bank-versus-row span {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.bank-versus-row strong {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--brand-green);
+}
+
+.actions-nav-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+/* ─── PANTALLA 3: FORMULARIO DEL CLIENTE ──────────────────── */
+.form-center-wrapper {
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+.bank-form-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 2.5rem;
+  box-shadow: var(--shadow-card);
+}
+
+.form-inputs-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+ {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.form-input-control {
+  padding: 0.85rem 1rem;
+  border: 1.5px solid var(--border-medium);
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  color: var(--brand-navy);
+  background: #ffffff;
+  outline: none;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.form-input-control:focus {
+  border-color: var(--brand-orange);
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+}
+
+.autofill-action-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1.25rem;
+}
+
+.btn-autofill-fast {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-medium);
+  color: var(--brand-navy);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-autofill-fast:hover {
+  background: #ffffff;
+  border-color: var(--brand-orange);
+  color: var(--brand-orange);
+}
+
+.trust-badge-box {
+  background: var(--brand-green-subtle);
+  border: 1px solid #a7f3d0;
+  border-radius: var(--radius-md);
+  padding: 1.1rem 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.trust-badge-box svg {
+  width: 22px;
+  height: 22px;
+  color: var(--brand-green);
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.trust-badge-box p {
+  font-size: 0.85rem;
+  color: #065f46;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ─── PANTALLA 1: PRODUCTO ESCANEADO (QR) ─────────────────── */
+.qr-scan-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 1rem;
+  border-radius: 9999px;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-bottom: 1rem;
+}
+
+.product-hero {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 2rem;
+  align-items: stretch;
+}
+
+.product-media {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-card);
+  position: relative;
+}
+
+.product-media img {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  object-fit: cover;
+  display: block;
+}
+
+ {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--border-light);
+  box-shadow: var(--shadow-sm);
+  padding: 0.35rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--brand-navy);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.product-info-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-card);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.product-specs-inline {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.product-spec-chip {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-sm);
+  padding: 0.3rem 0.7rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.product-price-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid var(--border-light);
+  padding-top: 1rem;
+}
+
+.product-cuota-teaser {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: -0.5rem;
+}
+
+.payment-methods-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-card);
+  margin-top: 2rem;
+}
+
+.pay-methods-title {
+  font-size: 0.85rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--brand-navy);
+  margin-bottom: 1rem;
+}
+
+.pay-method-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.pay-method-option {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  border: 2px solid var(--border-light);
+  background: var(--bg-subtle);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pay-method-option.active {
+  border-color: var(--brand-orange);
+  background: var(--brand-orange-subtle);
+}
+
+.pay-method-radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--border-medium);
+  background: #ffffff;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.pay-method-option.active .pay-method-radio {
+  border-color: var(--brand-orange);
+  background: var(--brand-orange);
+  box-shadow: inset 0 0 0 3px #ffffff;
+}
+
+.pay-method-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.pay-method-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--brand-navy);
+}
+
+.method-badge {
+  font-size: 0.62rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.18rem 0.55rem;
+  border-radius: 9999px;
+}
+
+.method-badge.aliado {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.method-sub {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-top: 0.35rem;
+}
+
+.method-price {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--brand-navy);
+  margin-top: 0.5rem;
+}
+
+.method-price span {
+  color: var(--brand-green);
+}
+
+.store-note {
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+.product-cta-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+/* MODAL / SHEET DE CATÁLOGO (OTRO PRODUCTO DE LA TIENDA) */
+.modal-sheet {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(4px);
+  padding: 1.5rem;
+  overflow-y: auto;
+}
+
+.modal-sheet.open {
+  display: block;
+}
+
+.modal-sheet-panel {
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 1.75rem;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);
+}
+
+.modal-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.modal-sheet-head h3 {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--brand-navy);
+}
+
+.modal-close-btn {
+  padding: 0.55rem 1rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-medium);
+  color: var(--text-secondary);
+  font-weight: 700;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+
+/* ─── PANTALLA 3: DOCUMENTOS Y BIOMETRÍA ──────────────────── */
+.form-divider-title {
+  grid-column: 1 / -1;
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--brand-orange);
+  border-top: 1px solid var(--border-light);
+  padding-top: 1.25rem;
+  margin-top: 0.25rem;
+}
+
+.doc-upload {
+  border: 1.5px dashed var(--border-medium);
+  border-radius: var(--radius-lg);
+  padding: 1.25rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--bg-subtle);
+}
+
+.doc-upload:hover {
+  border-color: var(--brand-orange);
+  background: #f3f4f6;
+}
+
+.doc-upload.has-doc {
+  border-style: solid;
+  border-color: var(--brand-green);
+  background: #ecfdf5;
+}
+
+.doc-upload .doc-upload-hint {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+ {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.25rem;
+}
+
+.doc-file-input {
+  display: none;
+}
+
+.doc-check-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
+  background: #f1f5f9;
+  color: var(--text-secondary);
+}
+
+.doc-check-pill.checking {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.doc-check-pill.ok {
+  background: #ecfdf5;
+  color: var(--brand-green);
+}
+
+.doc-check-pill.fail {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.doc-check-pill.warn {
+  background: #fffbeb;
+  color: #b45309;
+}
+
+.doc-thumb-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 0.75rem;
+}
+
+.doc-thumb-row img {
+  width: 92px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-light);
+  background: #ffffff;
+}
+
+.doc-thumb-clear {
+  font-size: 0.72rem;
+  color: var(--brand-orange);
+  font-weight: 700;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0.3rem;
+}
+
+.document-camera {
+  display: grid;
+  gap: 1rem;
+  margin-top: 0.9rem;
+}
+
+.document-camera-preview {
+  position: relative;
+  display: none;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--border-dark);
+  border-radius: var(--radius-lg);
+  background: #111827;
+}
+
+.document-camera-preview.is-open {
+  display: block;
+}
+
+.document-camera-preview video,
+.document-camera-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.document-camera-guide {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: min(88%, 620px);
+  aspect-ratio: 1.586 / 1;
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  border-radius: 0.65rem;
+  box-shadow: 0 0 0 999px rgba(17, 24, 39, 0.28);
+  pointer-events: none;
+}
+
+.document-camera-hint {
+  color: #e5e7eb;
+  font-size: 0.76rem;
+  text-align: center;
+}
+
+.document-camera-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.document-camera-actions .btn-bank {
+  flex: 1 1 12rem;
+}
+
+.document-camera-status {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.document-camera.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0;
+  width: 100vw;
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  margin: 0;
+  padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+  background: #0f172a;
+}
+
+.document-camera.is-fullscreen::before {
+  content: 'Escanea tu documento';
+  display: block;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 800;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+
+.document-camera.is-fullscreen .document-camera-preview {
+  display: block;
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: 720px;
+  min-height: 0;
+  height: auto;
+  max-height: none;
+  aspect-ratio: auto;
+  margin: auto;
+  border: 0;
+  border-radius: 0.75rem;
+}
+
+.document-camera.is-fullscreen .document-camera-preview video,
+.document-camera.is-fullscreen .document-camera-preview img {
+  object-fit: contain;
+}
+
+.document-camera.is-fullscreen .document-camera-guide {
+  width: min(88%, 620px);
+  border-width: 3px;
+}
+
+.document-camera.is-fullscreen .document-camera-actions {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  flex: 0 0 auto;
+}
+
+.document-camera.is-fullscreen .document-camera-actions .btn-bank {
+  display: flex;
+  width: 100%;
+  flex: 0 0 auto;
+  min-height: 3rem;
+  position: relative;
+  z-index: 1;
+  pointer-events: auto;
+}
+
+.document-camera.is-fullscreen .document-camera-status {
+  max-width: 720px;
+  margin: 0.65rem auto 0;
+  color: #e5e7eb;
+  text-align: center;
+}
+
+.document-onboarding {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: none;
+  align-items: stretch;
+  justify-content: stretch;
+  background: #ffffff;
+}
+
+.document-onboarding.active {
+  display: flex;
+}
+
+.document-onboarding-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100%;
+  padding: max(2rem, env(safe-area-inset-top)) max(1.5rem, env(safe-area-inset-right)) max(1.5rem, env(safe-area-inset-bottom)) max(1.5rem, env(safe-area-inset-left));
+  background: #ffffff;
+}
+
+.document-onboarding-progress {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 1.5rem;
+}
+
+.document-onboarding-progress span {
+  height: 4px;
+  flex: 1;
+  border-radius: 999px;
+  background: var(--border-light);
+}
+
+.document-onboarding-progress span.active {
+  background: var(--brand-navy);
+}
+
+.document-onboarding-icon {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  margin-bottom: 1rem;
+  border-radius: 50%;
+  background: var(--bg-subtle);
+  color: var(--brand-navy);
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.document-onboarding-card h3 {
+  margin: 0;
+  color: var(--brand-navy);
+  font-size: 1.25rem;
+}
+
+.document-onboarding-card p {
+  margin: 0.55rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.55;
+}
+
+.document-onboarding-tip {
+  max-width: 34rem;
+  min-height: 4.3rem;
+}
+
+.document-onboarding-actions {
+  display: flex;
+  gap: 0.65rem;
+  width: 100%;
+  max-width: 34rem;
+  margin-top: auto;
+  padding-top: 2rem;
+}
+
+.document-onboarding-actions .btn-bank {
+  flex: 1;
+}
+
+.biometric-setup-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  justify-content: flex-end;
+}
+
+.biometric-setup-actions .btn-bank {
+  flex: 0 1 auto;
+}
+
+.document-onboarding-skip {
+  display: block;
+  width: 100%;
+  margin-top: 0.9rem;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.78rem;
+}
+
+@media (min-width: 640px) {
+  .document-onboarding-card {
+    padding-left: max(3rem, env(safe-area-inset-left));
+    padding-right: max(3rem, env(safe-area-inset-right));
+  }
+
+  .document-onboarding-icon,
+  .document-onboarding-card h3,
+  .document-onboarding-card p {
+    margin-left: auto;
+    margin-right: auto;
+    width: min(100%, 34rem);
+  }
+}
+
+.biometric-setup-card {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  border-radius: var(--radius-lg);
+  padding: 1.25rem 1.5rem;
+}
+
+.biometric-setup-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  border: 1px solid #d1d5db;
+  flex-shrink: 0;
+}
+
+.biometric-setup-info {
+  flex: 1;
+  min-width: 220px;
+}
+
+.biometric-status-pill {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.22rem 0.7rem;
+  border-radius: 9999px;
+  background: #e2e8f0;
+  color: var(--text-secondary);
+}
+
+.biometric-status-pill.verified {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.consent-line {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 0.9rem 1rem;
+  line-height: 1.45;
+}
+
+.consent-line input {
+  flex-shrink: 0;
+  width: 18px;
+  height: 18px;
+  margin-top: 0.1rem;
+  accent-color: var(--brand-orange);
+}
+
+/* AVISO DE CORREO EN PANTALLA 4 */
+.email-notice-card {
+  display: flex;
+  gap: 0.9rem;
+  align-items: flex-start;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: var(--radius-lg);
+  padding: 1.15rem 1.35rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.email-notice-card svg {
+  width: 22px;
+  height: 22px;
+  color: var(--brand-green);
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.email-notice-card strong {
+  font-size: 0.9rem;
+  color: #065f46;
+}
+
+.email-notice-card p {
+  font-size: 0.8rem;
+  color: #065f46;
+  margin-top: 0.25rem;
+  line-height: 1.5;
+}
+
+/* OVERLAY BIOMÉTRICO (SIMULADO) */
+.biometric-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: rgba(15, 23, 42, 0.75);
+  backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.biometric-overlay.active {
+  display: flex;
+}
+
+.biometric-card {
+  background: #ffffff;
+  border-radius: var(--radius-xl);
+  padding: 2.25rem 2rem;
+  max-width: 420px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.35);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.biometric-face-frame {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 1.5rem auto;
+  border-radius: 50%;
+  border: 3px dashed var(--brand-orange);
+  background: var(--bg-subtle);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.biometric-face-frame svg {
+  width: 72px;
+  height: 72px;
+  color: var(--text-muted);
+}
+
+.biometric-scanline {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 34px;
+  background: linear-gradient(180deg, rgba(234, 88, 12, 0) 0%, rgba(234, 88, 12, 0.55) 100%);
+  animation: scanMove 1.6s ease-in-out infinite;
+}
+
+@keyframes scanMove {
+  0% { top: 0; }
+  100% { top: calc(100% - 34px); }
+}
+
+.biometric-card h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--brand-navy);
+}
+
+.biometric-card p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 0.4rem;
+  line-height: 1.5;
+}
+
+.biometric-progress {
+  height: 8px;
+  border-radius: 9999px;
+  background: #e2e8f0;
+  overflow: hidden;
+  margin-top: 1.5rem;
+}
+
+.biometric-progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 9999px;
+  background: var(--brand-orange);
+  transition: width 0.12s linear;
+}
+
+.biometric-success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--brand-green);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem auto;
+  font-size: 1.9rem;
+}
+
+/* VISTA DE CÁMARA EN EL OVERLAY BIOMÉTRICO */
+.biometric-video-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 4 / 3;
+  margin: 0 auto 1.25rem auto;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 2px dashed var(--brand-orange);
+  background: #0f172a;
+}
+
+.biometric-video-wrap video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+  display: block;
+}
+
+.biometric-face-guide {
+  position: absolute;
+  inset: 16% 16% 34% 16%;
+  border: 2px dashed rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.biometric-card .btn-bank {
+  margin-top: 1rem;
+}
+
+/* MÓVIL */
+@media (max-width: 900px) {
+  .product-hero { grid-template-columns: 1fr; }
+  .product-media img { min-height: 220px; max-height: 300px; }
+}
+
+@media (max-width: 640px) {
+  .modal-sheet { padding: 0; }
+  .modal-sheet-panel { margin: 0; border-radius: 0; min-height: 100%; padding: 1.25rem 1rem; }
+  .pay-method-option { padding: 1rem; }
+  .product-cta-row .btn-bank-lg { width: 100%; }
+  main { padding: 2rem 1rem calc(2.5rem + env(safe-area-inset-bottom, 0px)); }
+  header { padding: 0 0.85rem; height: auto; min-height: 72px; }
+  .email-notice-card { flex-direction: column; }
+}
+
+/* ─── PANTALLA 4: GRUPO DE 30 MIEMBROS ────────────────────── */
+.group-kpi-banner {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.25rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 1.5rem 2rem;
+  box-shadow: var(--shadow-card);
+  margin-bottom: 2rem;
+}
+
+ {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: block;
+  margin-bottom: 0.35rem;
+}
+
+.kpi-cell strong {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--brand-navy);
+}
+
+.group-members-container {
+  background: var(--bg-card);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-card);
+}
+
+.group-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.group-header-row h3 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--brand-navy);
+}
+
+.group-header-row p {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+.members-mosaic-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.85rem;
+  max-height: 480px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+
+.member-card-cell {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  padding: 1rem 0.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  position: relative;
+  transition: all 0.15s ease;
+}
+
+.member-card-cell.is-me {
+  background: var(--brand-orange-subtle);
+  border: 2px solid var(--brand-orange);
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.15);
+}
+
+.member-card-cell.has-won {
+  background: var(--brand-green-subtle);
+  border: 2px solid var(--brand-green);
+}
+
+.member-tag-top {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 0.15rem 0.55rem;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+.member-tag-top.me {
+  background: var(--brand-orange);
+  color: #ffffff;
+}
+
+.member-tag-top.won {
+  background: var(--brand-green);
+  color: #ffffff;
+}
+
+.member-avatar-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid var(--border-medium);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--brand-navy);
+  margin-bottom: 0.5rem;
+}
+
+.member-card-cell.is-me .member-avatar-icon {
+  background: var(--brand-orange);
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+.member-card-cell.has-won .member-avatar-icon {
+  background: var(--brand-green);
+  color: #ffffff;
+  border-color: #ffffff;
+}
+
+.member-cupo-num {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.member-fullname {
+  font-size: 0.85rem;
+  font-weight: 800;
+  color: var(--brand-navy);
+  margin: 0.15rem 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.member-city-text {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.member-status-pill {
+  margin-top: 0.5rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+/* ─── PANTALLA DE CARGA / LOADING OVERLAY BANCARIO ────────── */
+.loading-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.loading-backdrop.active {
+  display: flex;
+}
+
+.loading-modal-card {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-xl);
+  padding: 2.75rem 2.25rem;
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.bank-spinner-ring {
+  width: 58px;
+  height: 58px;
+  border: 4px solid #e2e8f0;
+  border-top-color: var(--brand-orange);
+  border-radius: 50%;
+  margin: 0 auto 1.5rem auto;
+  animation: spinRing 0.8s linear infinite;
+}
+
+@keyframes spinRing {
+  to { transform: rotate(360deg); }
+}
+
+.loading-modal-title {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--brand-navy);
+  margin-bottom: 0.5rem;
+}
+
+.loading-modal-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.loading-checklist {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 1rem 1.25rem;
+  text-align: left;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.checklist-step {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text-muted);
+  transition: all 0.3s ease;
+}
+
+.checklist-step.done {
+  color: #065f46;
+  font-weight: 700;
+}
+
+.checklist-step.done svg {
+  color: var(--brand-green);
+}
+
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .plan-split { grid-template-columns: 1fr; }
+  .plan-preview-box { position: static; }
+  .group-kpi-banner { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 640px) {
+  header { padding: 0 1rem; }
+  .bank-stepper { display: none; }
+  .frequency-options { grid-template-columns: 1fr; }
+  .form-inputs-grid { grid-template-columns: 1fr; }
+  .group-kpi-banner { grid-template-columns: 1fr 1fr; }
+  .members-mosaic-grid { grid-template-columns: repeat(2, 1fr); }
+  .validation-flow-nav { align-items: stretch; flex-direction: column; }
+  .validation-stage-bar { width: 100%; }
+  .validation-flow-nav .btn-bank { width: 100%; }
+}
+
+/* ─── ACCESIBILIDAD Y ESTADOS ──────────────────────────────── */
+::selection {
+  background: rgba(234, 88, 12, 0.18);
+}
+
+:focus-visible {
+  outline: 2px solid var(--brand-orange);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.form-field.invalid .form-input-control,
+.form-field.invalid select {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+}
+
+.validation-flow-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+  background: var(--bg-subtle);
+}
+
+.validation-stage-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.validation-stage-indicator span {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.validation-stage-indicator strong {
+  color: var(--brand-navy);
+  font-size: 0.9rem;
+}
+
+.validation-stage-bar {
+  height: 4px;
+  flex: 1;
+  min-width: 72px;
+  border-radius: 9999px;
+  background: var(--border-medium);
+  overflow: hidden;
+}
+
+.validation-stage-bar-fill {
+  height: 100%;
+  width: 25%;
+  border-radius: inherit;
+  background: var(--brand-orange);
+  transition: width 0.2s ease;
+}
+
+.validation-panel {
+  display: none !important;
+}
+
+.validation-panel.is-active {
+  display: block !important;
+  animation: fadeIn 0.2s ease-out both;
+}
+
+.validation-panel-intro {
+  margin-bottom: 1.25rem;
+}
+
+.validation-panel-intro h3 {
+  color: var(--brand-navy);
+  font-size: 1.2rem;
+  margin-bottom: 0.35rem;
+}
+
+.validation-panel-intro p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.55;
+  max-width: 62ch;
+}
+
+.validation-summary {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.validation-summary-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.validation-summary-row span {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.validation-summary-row strong {
+  color: var(--brand-navy);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.validation-error {
+  display: none;
+  margin-top: 0.8rem;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-md);
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.validation-error.is-visible {
+  display: block;
+}
+
+ {
+  font-size: 0.7rem;
+  line-height: 1.4;
+  min-height: 1.2em;
+  color: #b91c1c;
+  margin-top: 0.25rem;
+  font-weight: 600;
+}
+
+.consent-error {
+  margin-top: 0.35rem;
+}
+
+.members-mosaic-grid {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-medium) transparent;
+}
+
+.members-mosaic-grid::-webkit-scrollbar {
+  width: 8px;
+}
+
+.members-mosaic-grid::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+  border-radius: 9999px;
+}
+
+@media (pointer: coarse) {
+  .btn-bank, .btn-header-reset, .btn-select-bike, .btn-autofill-fast,
+  .step-item, .form-input-control { min-height: 44px; }
+}
+
+@media (hover: none) {
+  .bike-card:hover { transform: none; box-shadow: var(--shadow-card); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  html { scroll-behavior: auto; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ─── LOADING OVERLAY / PANTALLA DE CARGA BANCARIA ────────── -->
+<div class="loading-backdrop" id="loadingModalBackdrop">
+  <div class="loading-modal-card">
+    <div class="bank-spinner-ring"></div>
+    <h3 class="loading-modal-title" id="loadingTitle">Verificando información...</h3>
+    <p class="loading-modal-subtitle" id="loadingSubtitle">Por favor espera mientras el sistema procesa la solicitud.</p>
+    
+    <div class="loading-checklist" id="loadingChecklist">
+      <!-- Pasos dinámicos -->
+    </div>
+  </div>
+</div>
+
+<!-- ─── OVERLAY BIOMÉTRICO (CÁMARA) ─────────────────────────── -->
+<div class="biometric-overlay" id="biometricBackdrop">
+  <div class="biometric-card">
+    <div class="biometric-face-frame" id="biometricFaceFrame">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      </svg>
+      <div class="biometric-scanline"></div>
+    </div>
+    <div class="biometric-video-wrap" id="biometricVideoWrap" style="display: none;">
+      <video id="biometricVideo" autoplay playsinline muted></video>
+      <div class="biometric-face-guide"></div>
+    </div>
+    <h3 id="biometricTitle">Verificación Biométrica</h3>
+    <p id="biometricSubtitle">Acerque su rostro al marco para la validación facial.</p>
+    <div class="biometric-progress">
+      <div class="biometric-progress-fill" id="biometricProgressFill"></div>
+    </div>
+    <button type="button" class="btn-bank btn-bank-outline" id="btnBiometricFallback" style="display: none;" onclick="retryBiometricVerification()">Reintentar cámara</button>
+    <p class="store-note" style="margin-top: 0.9rem;">La cámara se usa solo durante la comprobación. Ninguna imagen se guarda en este simulador.</p>
+  </div>
+</div>
+
+<div class="document-onboarding" id="documentOnboarding" role="dialog" aria-modal="true" aria-labelledby="documentOnboardingTitle">
+  <div class="document-onboarding-card">
+    <div class="document-onboarding-progress" aria-label="Progreso del tutorial">
+      <span class="active" data-onboarding-dot="1"></span>
+      <span data-onboarding-dot="2"></span>
+      <span data-onboarding-dot="3"></span>
+    </div>
+    <div class="document-onboarding-icon" id="documentOnboardingIcon" aria-hidden="true">☀</div>
+    <h3 id="documentOnboardingTitle">Busca buena iluminación</h3>
+    <p class="document-onboarding-tip" id="documentOnboardingTip">Evita reflejos y sombras. Coloca tu cédula en una superficie clara y bien iluminada.</p>
+    <div class="document-onboarding-actions">
+      <button type="button" class="btn-bank btn-bank-outline" id="btnDocumentOnboardingBack" onclick="previousDocumentOnboardingStep()">Atrás</button>
+      <button type="button" class="btn-bank btn-bank-primary" id="btnDocumentOnboardingNext" onclick="nextDocumentOnboardingStep()">Siguiente</button>
+    </div>
+    <button type="button" class="document-onboarding-skip" onclick="skipDocumentOnboarding()">Omitir tutorial y abrir cámara</button>
+  </div>
+</div>
+
+<!-- ─── HEADER INSTITUCIONAL ────────────────────────────────── -->
+<header>
+  <div class="header-brand" onclick="goToScreen(1)">
+    <div class="brand-badge">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/>
+        <circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/>
+      </svg>
+    </div>
+    <div class="brand-info">
+      <div class="brand-title">MOTO<span>KAIZEN</span></div>
+      <div class="brand-subtitle">Financiamiento Colectivo</div>
+    </div>
+  </div>
+
+  <div class="bank-stepper">
+    <div class="step-item active" id="pill-1" onclick="goToScreen(1)"><span class="step-badge">1</span>Producto y Pago</div>
+    <div class="step-item" id="pill-2" onclick="goToScreen(2)"><span class="step-badge">2</span>Plan de Cuotas</div>
+    <div class="step-item" id="pill-3" onclick="goToScreen(3)"><span class="step-badge">3</span>Validación</div>
+    <div class="step-item" id="pill-4" onclick="goToScreen(4)"><span class="step-badge">4</span>Grupo de 30</div>
+  </div>
+
+  <button class="btn-header-reset" onclick="resetSimulation()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+      <path d="M3 3v5h5"/>
+    </svg>
+    Reiniciar
+  </button>
+</header>
+
+<main>
+
+  <!-- ─── PANTALLA 1: PRODUCTO ESCANEADO (QR) ─────────────────── -->
+  <section id="screen-1" class="screen-view active">
+    <div class="section-banner">
+      <div class="section-tag">Paso 1 de 4 · Producto Escaneado</div>
+      <h1 class="section-title">Este es el producto que fotografiaste</h1>
+      <p class="section-desc">Simulamos la experiencia de escanear el código QR de la motocicleta en una tienda aliada de MotoKaizen para revisar su información y opciones de pago.</p>
+    </div>
+
+    <div class="qr-scan-chip">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="4" height="7" rx="1"/>
+        <path d="M18 14h3v3m-3 3h.01M14 21h.01M21 18h.01"/>
+      </svg>
+      Código QR leído · Convenio activo con esta tienda
+    </div>
+
+    <div class="product-hero">
+      <!-- Ficha del producto -->
+      <div class="product-media">
+        <div class="product-media-flag">📷 Foto tomada por el cliente</div>
+        <img id="landBikeImg" src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=900&q=80" alt="Motocicleta escaneada">
+      </div>
+
+      <!-- Información del producto -->
+      <div class="product-info-panel">
+        <div>
+          <div class="bike-brand" id="landBikeBrand">YAMAHA</div>
+          <div class="bike-model" id="landBikeModel" style="margin-bottom: 0.5rem;">NMAX Connected 155</div>
+          <div class="product-specs-inline" id="landBikeSpecs">
+            <span class="product-spec-chip">155 cc</span>
+            <span class="product-spec-chip">15.1 HP</span>
+            <span class="product-spec-chip">140 km/gal</span>
+          </div>
+        </div>
+
+        <div>
+          <div class="product-price-row">
+            <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Valor Total Comercial</span>
+            <strong id="landBikePrice" style="font-size: 1.4rem; font-weight: 900; color: var(--brand-navy);">$0</strong>
+          </div>
+          <p class="product-cuota-teaser" id="landCuotaTeaser">Cuota desde $0 cada 15 días · Sin inicial · 0% de interés</p>
+        </div>
+
+        <button class="btn-bank btn-bank-outline" onclick="openProductPicker()" style="width: 100%;">🛍️ Elegir otro producto de la tienda</button>
+      </div>
+    </div>
+
+    <!-- Métodos de pago -->
+    <div class="payment-methods-card">
+      <div class="pay-methods-title">Métodos de pago disponibles</div>
+      <div class="pay-method-stack">
+        <div class="pay-method-option active" id="payMethodMK" onclick="selectPaymentMethod('MK')">
+          <div class="pay-method-radio"></div>
+          <div style="flex: 1;">
+            <div class="pay-method-head">
+              <span class="pay-method-title">Convenio de Financiamiento Moto Kaizen</span>
+              <span class="method-badge aliado">🏪 Tienda Aliada</span>
+            </div>
+            <p class="method-sub">Autofinanciamiento colectivo en tandas de 30 personas. Pagas cuotas fijas sin crédito bancario ni consultas en Datacrédito.</p>
+            <div class="method-price" id="payMethodMKPrice">Plan quincenal o mensual · <span>0% de interés usurero</span></div>
+          </div>
+        </div>
+
+        <div class="pay-method-option" id="payMethodContado" onclick="selectPaymentMethod('CONTADO')">
+          <div class="pay-method-radio"></div>
+          <div style="flex: 1;">
+            <div class="pay-method-head">
+              <span class="pay-method-title">Pago de contado en tienda</span>
+            </div>
+            <p class="method-sub">Cancelas el valor total en caja y te llevas la moto de inmediato.</p>
+            <div class="method-price" id="payMethodContadoPrice"></div>
+          </div>
+        </div>
+      </div>
+      <p class="store-note">Los pagos con convenio Moto Kaizen se gestionan 100% de forma digital desde este simulador.</p>
+    </div>
+
+    <!-- Acción principal -->
+    <div class="product-cta-row">
+      <button class="btn-bank btn-bank-primary btn-bank-lg" onclick="acceptConvenio()">Sí, quiero pagar con el Plan de Moto Kaizen →</button>
+    </div>
+  </section>
+
+  <!-- ─── PANTALLA 2: CONFIGURACIÓN DEL PLAN ──────────────────── -->
+  <section id="screen-2" class="screen-view">
+    <div class="section-banner">
+      <div class="section-tag">Paso 2 de 4 · Plan Moto Kaizen</div>
+      <h2 class="section-title">Configura tu plan de cuotas fijas</h2>
+      <p class="section-desc">Selecciona la frecuencia de pago de tu cuota a través del convenio de autofinanciamiento colectivo. En MotoKaizen no hay intereses bancarios usureros.</p>
+    </div>
+
+    <div class="plan-split">
+      <!-- Resumen de Moto -->
+      <div class="plan-preview-box">
+        <img id="previewBikeImg" src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=700&q=80" alt="Motocicleta seleccionada">
+        <div class="plan-preview-content">
+          <div>
+            <div class="bike-brand" id="previewBikeBrand">YAMAHA</div>
+            <div class="bike-model" id="previewBikeModel" style="margin-bottom: 0.25rem;">NMAX Connected 155</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);" id="previewBikeSpecs">155 cc · 15.1 HP · 140 km/gal</div>
+          </div>
+          <div style="border-top: 1px solid var(--border-light); padding-top: 1rem; display: flex; justify-content: space-between; align-items: baseline;">
+            <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Valor Total Comercial</span>
+            <strong id="previewBikePrice" style="font-size: 1.2rem; color: var(--brand-navy);">$0</strong>
+          </div>
+          <button class="btn-bank btn-bank-outline" onclick="goToScreen(1)" style="width: 100%;">← Cambiar producto</button>
+        </div>
+      </div>
+
+      <!-- Configuración -->
+      <div class="config-form-container">
+        
+        <!-- Frecuencia -->
+        <div class="config-card">
+          <div class="config-card-title">Modalidad de Pago de la Cuota</div>
+          <div class="frequency-options">
+            <div class="freq-card active" id="cardFreqQuincenal" onclick="setFrequency('QUINCENAL')">
+              <div class="freq-radio"></div>
+              <div class="freq-card-name">Plan Quincenal ⚡</div>
+              <div class="freq-card-desc">Pago cada <strong>15 días</strong>. 30 cuotas en 15 meses de plazo. Entrega de motos acelerada.</div>
+            </div>
+            <div class="freq-card" id="cardFreqMensual" onclick="setFrequency('MENSUAL')">
+              <div class="freq-radio"></div>
+              <div class="freq-card-name">Plan Mensual 🗓️</div>
+              <div class="freq-card-desc">Pago cada <strong>30 días</strong>. 30 cuotas en 30 meses de plazo. Valor de cuota más liviano.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta de Cuota Calculada -->
+        <div class="cuota-statement-box">
+          <div class="cuota-type-label" id="labelCuotaType">Tu Cuota Fija Quincenal (Cada 15 días)</div>
+          <div class="cuota-amount" id="displayCuotaValue">$0</div>
+          <div class="cuota-tag-sub">✓ 30 cuotas fijas directas · 0% de interés bancario</div>
+          
+          <div class="bank-versus-row">
+            <span>En un banco tradicional pagarías (~38% E.A.):</span>
+            <strong id="displayAhorroValue">¡Te ahorras $0 COP en intereses!</strong>
+          </div>
+        </div>
+
+        <!-- Botones de Navegación -->
+        <div class="actions-nav-row">
+          <button class="btn-bank btn-bank-outline" onclick="goToScreen(1)">← Volver</button>
+          <button class="btn-bank btn-bank-primary btn-bank-lg" onclick="goToScreen(3)">Continuar con mis datos →</button>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── PANTALLA 3: DATOS DEL CLIENTE ───────────────────────── -->
+  <section id="screen-3" class="screen-view">
+    <div class="section-banner">
+      <div class="section-tag">Paso 3 de 4 · Validación Digital</div>
+      <h2 class="section-title">Completa tu validación de identidad</h2>
+      <p class="section-desc">Avanza una tarea a la vez. Conservaremos tus datos mientras completas la validación documental y facial.</p>
+    </div>
+
+    <div class="form-center-wrapper">
+      <div class="bank-form-card">
+        
+        <div class="validation-flow-nav" aria-label="Progreso de validación">
+          <button type="button" class="btn-bank btn-bank-outline" id="btnValidationBack" onclick="goBackValidationStage()">← Atrás</button>
+          <div class="validation-stage-indicator">
+            <span id="validationStageLabel">1 de 4</span>
+            <div class="validation-stage-bar" aria-hidden="true">
+              <div class="validation-stage-bar-fill" id="validationStageBarFill"></div>
+            </div>
+            <strong id="validationStageName">Datos personales</strong>
+          </div>
+          <button type="button" class="btn-bank btn-bank-primary" id="btnValidationNext" onclick="advanceValidationStage()">Continuar</button>
+        </div>
+
+        <form id="clientForm" onsubmit="handleFormSubmit(event)" novalidate>
+          <div class="form-inputs-grid">
+            <div class="form-field validation-personal-field">
+              <label>Nombres Completos *</label>
+              <input type="text" id="inputNombres" class="form-input-control" required placeholder="Ej: Camilo Andrés">
+            </div>
+
+            <div class="form-field validation-personal-field">
+              <label>Apellidos *</label>
+              <input type="text" id="inputApellidos" class="form-input-control" required placeholder="Ej: Restrepo Gómez">
+            </div>
+
+            <div class="form-field validation-personal-field">
+              <label>Correo Electrónico *</label>
+              <input type="email" id="inputEmail" class="form-input-control" required placeholder="cliente@correo.com" autocomplete="email">
+            </div>
+
+            <div class="form-field validation-personal-field">
+              <label>Número Móvil / WhatsApp *</label>
+              <input type="tel" id="inputTelefono" class="form-input-control" required placeholder="300 123 4567" inputmode="tel">
+            </div>
+
+            <div class="form-divider-title validation-document-field">📎 Documentación del Titular</div>
+
+            <div class="form-field validation-document-field">
+              <label>Tipo de Documento *</label>
+              <select id="inputTipoDoc" class="form-input-control">
+                <option value="Cédula de Ciudadanía">Cédula de Ciudadanía</option>
+                <option value="Tarjeta de Identidad">Tarjeta de Identidad</option>
+                <option value="Pasaporte">Pasaporte</option>
+                <option value="Cédula de Extranjería">Cédula de Extranjería</option>
+              </select>
+            </div>
+
+            <div class="form-field validation-document-field">
+              <label>Número del Documento *</label>
+              <input type="text" id="inputDocumento" class="form-input-control" required placeholder="1020304050 o ABC12345" autocomplete="off">
+            </div>
+
+            <div class="form-field validation-document-field" style="grid-column: 1 / -1;">
+              <label>Escaneo del Documento de Identidad *</label>
+              <input type="file" id="inputDocFoto" class="doc-file-input" accept="image/*" capture="environment" onchange="handleDocFotoChange(event)">
+              <p class="method-sub">Requisitos: documento completo y de frente, dentro del marco, sin reflejos ni dedos, con buena luz y texto nítido. Debe verse el número completo. Se aceptan cédula, tarjeta de identidad, cédula de extranjería o pasaporte.</p>
+              <div class="document-camera" id="documentCamera" aria-label="Captura del documento" style="display: none;">
+                <div class="document-camera-preview" id="documentCameraPreview">
+                  <video id="documentCameraVideo" autoplay muted playsinline></video>
+                  <img id="documentCameraSnapshot" alt="Vista previa del documento capturado" style="display: none;">
+                  <div class="document-camera-guide" aria-hidden="true"></div>
+                </div>
+                <div class="document-camera-actions">
+                  <button type="button" class="btn-bank btn-bank-primary" id="btnOpenDocumentCamera" onclick="openDocumentCamera()">Abrir cámara y escanear</button>
+                  <button type="button" class="btn-bank btn-bank-outline" id="btnCaptureDocument" onclick="captureDocumentPhoto()" style="display: none;">Tomar foto</button>
+                  <button type="button" class="btn-bank btn-bank-outline" id="btnRetakeDocument" onclick="retakeDocumentPhoto()" style="display: none;">Repetir foto</button>
+                  <button type="button" class="btn-bank btn-bank-green" id="btnContinueDocument" onclick="continueFromDocumentCamera()" style="display: none;">Continuar al reconocimiento facial</button>
+                </div>
+                <p class="document-camera-status" id="documentCameraStatus">Alinea el documento completo, evita reflejos y asegúrate de que el número se lea antes de tomar la foto.</p>
+              </div>
+              <div class="doc-check-pill" id="docCheckPill" role="status">⏳ Pendiente de verificación</div>
+            </div>
+
+            <div class="biometric-setup-card validation-face-field">
+              <div class="biometric-setup-icon">🪪</div>
+              <div class="biometric-setup-info">
+                <div class="config-card-title" style="margin-bottom: 0.25rem;">Verificación facial con cámara</div>
+                <p class="method-sub">La cámara y el servidor OpenCV deben estar disponibles. Esta prueba detecta la presencia de un rostro y no afirma identidad, autenticidad ni prueba de vida.</p>
+                <span class="biometric-status-pill" id="biometricStatusPill">⏳ Pendiente de verificación</span>
+              </div>
+              <div class="biometric-setup-actions">
+                <button type="button" class="btn-bank btn-bank-outline" id="btnStartBiometric" onclick="startBiometricVerification()">📷 Iniciar verificación</button>
+              </div>
+            </div>
+
+            <div class="form-field validation-personal-field" style="grid-column: 1 / -1;">
+              <label>Ciudad de Radicación *</label>
+              <select id="inputCiudad" class="form-input-control">
+                <option value="Medellín">Medellín</option>
+                <option value="Bogotá D.C.">Bogotá D.C.</option>
+                <option value="Cali">Cali</option>
+                <option value="Barranquilla">Barranquilla</option>
+                <option value="Bucaramanga">Bucaramanga</option>
+                <option value="Pereira">Pereira</option>
+                <option value="Manizales">Manizales</option>
+                <option value="Cartagena">Cartagena</option>
+              </select>
+            </div>
+
+            <div class="form-field validation-personal-field" style="grid-column: 1 / -1;">
+              <label>Actividad Económica *</label>
+              <select id="inputOcupacion" class="form-input-control">
+                <option value="Independiente / Comerciante">Independiente / Comerciante</option>
+                <option value="Empleado">Empleado con contrato laboral</option>
+                <option value="Repartidor de Plataforma">Repartidor de Plataforma</option>
+                <option value="Conductor de Plataforma">Conductor de Plataforma</option>
+                <option value="Emprendedor">Emprendedor independiente</option>
+              </select>
+            </div>
+
+            <label class="consent-line validation-confirmation-field">
+              <input type="checkbox" id="inputConsent" required>
+              <span>Autorizo el tratamiento de mis datos personales para continuar con la solicitud dentro del entorno de demostración.</span>
+            </label>
+            <div class="field-error-message consent-error validation-confirmation-field" id="consentError"></div>
+          </div>
+
+          <div class="trust-badge-box validation-confirmation-field">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+            <p><strong>Transparencia:</strong> aquí se muestran únicamente comprobaciones que el servidor haya confirmado. La asignación del grupo de esta demo no representa aprobación crediticia.</p>
+          </div>
+
+          <div class="validation-summary validation-confirmation-field" id="validationSummary">
+            <div class="validation-summary-row"><span>Titular</span><strong id="summaryClientName">—</strong></div>
+            <div class="validation-summary-row"><span>Documento</span><strong id="summaryDocument">—</strong></div>
+            <div class="validation-summary-row"><span>Documento analizado</span><strong id="summaryDocumentStatus">Pendiente</strong></div>
+            <div class="validation-summary-row"><span>Rostro detectado</span><strong id="summaryFaceStatus">Pendiente</strong></div>
+          </div>
+
+          <div class="validation-error" id="validationStageError" role="alert"></div>
+        </form>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── PANTALLA 4: GRUPO DE 30 INTEGRANTES ─────────────────── -->
+  <section id="screen-4" class="screen-view">
+    <div class="section-banner">
+      <div class="section-tag green">Paso 4 de 4 · Consorcio Conformado</div>
+      <h2 class="section-title">¡Bienvenido a tu Grupo de Tandas!</h2>
+      <p class="section-desc">Has sido integrado en el <strong id="displayGroupCupo" style="color: var(--brand-navy);">Cupo #14</strong> junto a otros 29 titulares que aportan para adquirir la misma motocicleta <strong id="displayGroupMoto" style="color: var(--brand-orange);"></strong>.</p>
+    </div>
+
+    <div class="email-notice-card" id="emailNoticeCard">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/>
+      </svg>
+      <div>
+        <strong>Correo enviado a <span id="emailNoticeAddress" style="font-weight: 900;"></span></strong>
+        <p id="emailNoticeBody" style="margin-top: 0.25rem; line-height: 1.5;"></p>
+      </div>
+    </div>
+
+    <!-- Indicadores Financieros del Grupo -->
+    <div class="group-kpi-banner">
+      <div class="kpi-cell">
+        <span>Código Oficial de Grupo</span>
+        <strong id="kpiGroupCode">#KZ-30</strong>
+      </div>
+      <div class="kpi-cell">
+        <span>Total Integrantes</span>
+        <strong>30 / 30 <small style="font-size: 0.85rem; color: var(--brand-green); font-weight: 700;">(Completo)</small></strong>
+      </div>
+      <div class="kpi-cell">
+        <span>Cuotas Recaudadas (Ciclo 1)</span>
+        <strong style="color: var(--brand-green);">30 / 30 ✓</strong>
+      </div>
+      <div class="kpi-cell">
+        <span>Fondo Total del Ciclo</span>
+        <strong style="color: var(--brand-orange);" id="kpiGroupFondo">$0 COP</strong>
+      </div>
+    </div>
+
+    <!-- Mosaico de los 30 Miembros -->
+    <div class="group-members-container">
+      <div class="group-header-row">
+        <div>
+          <h3>Nómina Oficial de los 30 Integrantes</h3>
+          <p>Todos los miembros aportan su cuota en cada ciclo. Al cabo de 30 tandas, el 100% de los integrantes recibe su vehículo 0km.</p>
+        </div>
+        </div>
+
+      <div class="members-mosaic-grid" id="membersMosaicGrid"></div>
+    </div>
+
+    <!-- Acciones Finales -->
+    <div style="display: flex; align-items: center; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 1.5rem;">
+      <button class="btn-bank btn-bank-green btn-bank-lg" onclick="alert('En un entorno productivo, serás transferido directamente a la línea oficial de WhatsApp de MotoKaizen.')">💬 Contactar Asesor MotoKaizen</button>
+      <button class="btn-bank btn-bank-primary btn-bank-lg" onclick="resetSimulation()">🔄 Nueva Simulación</button>
+    </div>
+  </section>
+
+  </main>
+
+<!-- ─── MODAL / SHEET: OTROS PRODUCTOS DE LA TIENDA ─────────── -->
+<div class="modal-sheet" id="productPickerModal">
+  <div class="modal-sheet-panel">
+    <div class="modal-sheet-head">
+      <h3>Elige el producto que fotografiaste en la tienda</h3>
+      <button class="modal-close-btn" onclick="closeProductPicker()">✕ Cerrar</button>
+    </div>
+    <div class="bikes-grid" id="bikesCatalogGrid"></div>
+  </div>
+</div>
+
+<script>
+/* ─── BASE DE DATOS DE MOTOCICLETAS ───────────────────────── */
+const MOTOS_DATA = [
+  {
+    id: 1,
+    marca: 'YAMAHA',
+    modelo: 'NMAX Connected 155',
+    badge: 'Líder en Ventas',
+    cc: '155 cc',
+    hp: '15.1 HP',
+    km: '140 km/gal',
+    precio: 16500000,
+    img: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=700&q=80'
+  },
+  {
+    id: 2,
+    marca: 'BAJAJ',
+    modelo: 'Pulsar NS200 FI ABS',
+    badge: 'Deportiva Urbana',
+    cc: '199.5 cc',
+    hp: '24.1 HP',
+    km: '130 km/gal',
+    precio: 13800000,
+    img: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=700&q=80'
+  },
+  {
+    id: 3,
+    marca: 'SUZUKI',
+    modelo: 'Gixxer 150 FI',
+    badge: 'Alta Eficiencia',
+    cc: '155 cc',
+    hp: '13.4 HP',
+    km: '160 km/gal',
+    precio: 10800000,
+    img: 'https://images.unsplash.com/photo-1609630875171-b1321377ee65?auto=format&fit=crop&w=700&q=80'
+  },
+  {
+    id: 4,
+    marca: 'KTM',
+    modelo: 'Duke 200 NG',
+    badge: 'Gama Deportiva',
+    cc: '199.5 cc',
+    hp: '25.5 HP',
+    km: '120 km/gal',
+    precio: 15900000,
+    img: 'https://images.unsplash.com/photo-1571188654248-7a89213915f7?auto=format&fit=crop&w=700&q=80'
+  },
+  {
+    id: 5,
+    marca: 'HONDA',
+    modelo: 'CB 125F Twister',
+    badge: 'Trabajo y Ciudad',
+    cc: '124.8 cc',
+    hp: '8.5 HP',
+    km: '190 km/gal',
+    precio: 8400000,
+    img: 'https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?auto=format&fit=crop&w=700&q=80'
+  },
+  {
+    id: 6,
+    marca: 'YAMAHA',
+    modelo: 'MT-03 ABS',
+    badge: 'Alta Gama',
+    cc: '321 cc',
+    hp: '41.4 HP',
+    km: '95 km/gal',
+    precio: 31500000,
+    img: 'https://images.unsplash.com/photo-1615172282427-9a57ef2d142e?auto=format&fit=crop&w=700&q=80'
+  }
+];
+
+const COMPANEROS_NAMES = [
+  { n: 'Mateo Gómez', c: 'Medellín' },
+  { n: 'Valentina Restrepo', c: 'Bogotá D.C.' },
+  { n: 'Carlos Mario Ruiz', c: 'Cali' },
+  { n: 'Daniela Morales', c: 'Barranquilla' },
+  { n: 'Andrés Castro', c: 'Bucaramanga' },
+  { n: 'Santiago Ospina', c: 'Pereira' },
+  { n: 'Laura Jimena Pardo', c: 'Manizales' },
+  { n: 'Alejandro Vargas', c: 'Ibagué' },
+  { n: 'Juliana Henao', c: 'Medellín' },
+  { n: 'Esteban Cárdenas', c: 'Bogotá D.C.' },
+  { n: 'Mariana Duque', c: 'Cali' },
+  { n: 'Sebastián Quintero', c: 'Cartagena' },
+  { n: 'Paula Andrea Ríos', c: 'Villavicencio' },
+  { n: 'Felipe Jaramillo', c: 'Armenia' },
+  { n: 'Natalia Benítez', c: 'Neiva' },
+  { n: 'Nicolás Salgado', c: 'Pasto' },
+  { n: 'Diana Marcela Torres', c: 'Cúcuta' },
+  { n: 'Diego Fernando Silva', c: 'Santa Marta' },
+  { n: 'Carolina Monsalve', c: 'Montería' },
+  { n: 'Julián David Peña', c: 'Tunja' },
+  { n: 'Tatiana Osorio', c: 'Popayán' },
+  { n: 'Gabriel Lozano', c: 'Sincelejo' },
+  { n: 'Andrea Milena Rojas', c: 'Valledupar' },
+  { n: 'Mauricio Correa', c: 'Palmira' },
+  { n: 'Vanessa Hurtado', c: 'Soacha' },
+  { n: 'Christian Meza', c: 'Bello' },
+  { n: 'Sara Sofía Ortiz', c: 'Envigado' },
+  { n: 'Juan Pablo Gil', c: 'Itagüí' },
+  { n: 'Lorena Marín', c: 'Floridablanca' }
+];
+
+/* ─── ESTADO GLOBAL ───────────────────────────────────────── */
+let AppState = {
+  currentScreen: 1,
+  validationStage: 1,
+  selectedBike: MOTOS_DATA[1], // Pulsar NS200 por defecto
+  frequency: 'QUINCENAL',      // 'QUINCENAL' o 'MENSUAL'
+  paymentMethod: 'MK',         // 'MK' (Convenio MotoKaizen) o 'CONTADO'
+  cuotaExacta: 0,
+  ahorroEstimado: 0,
+  biometricVerified: false,
+  biometricMode: 'none',
+  docPhotoSet: false,
+  personalDataValid: false,
+  docCheck: { valid: false, mode: 'none', type: null, message: '' },
+  client: {
+    nombres: 'David',
+    apellidos: 'Rendón Arango',
+    email: 'cliente@correo.com',
+    tipoDoc: 'Cédula de Ciudadanía',
+    documento: '1035928174',
+    telefono: '312 894 5621',
+    ciudad: 'Medellín',
+    ocupacion: 'Independiente / Comerciante'
+  },
+  group: {
+    code: '#KZ-30',
+    meCupo: 14,
+    members: []
+  }
+};
+
+/* ─── UTILITARIOS ─────────────────────────────────────────── */
+const formatCOP = (num) => new Intl.NumberFormat('es-CO', {
+  style: 'currency',
+  currency: 'COP',
+  maximumFractionDigits: 0
+}).format(num);
+
+const isDocumentApproved = () => Boolean(AppState.docCheck?.valid);
+const isFaceApproved = () => Boolean(AppState.biometricVerified);
+
+const $ = (id) => document.getElementById(id);
+
+/* ─── MOTOR DE PANTALLAS DE CARGA BANCARIAS ───────────────── */
+function showLoadingScreen(config, callback) {
+  const backdrop = $('loadingModalBackdrop');
+  const title = $('loadingTitle');
+  const subtitle = $('loadingSubtitle');
+  const checklist = $('loadingChecklist');
+
+  title.textContent = config.title;
+  subtitle.textContent = config.subtitle;
+  checklist.innerHTML = '';
+
+  config.steps.forEach((stepText, idx) => {
+    const item = document.createElement('div');
+    item.className = 'checklist-step';
+    item.id = 'loadStep_' + idx;
+    item.innerHTML = `<span style="font-weight: 800;">○</span> <span>${stepText}</span>`;
+    checklist.appendChild(item);
+  });
+
+  backdrop.classList.add('active');
+
+  // Animación progresiva de los pasos
+  const stepDuration = config.duration / config.steps.length;
+  config.steps.forEach((_, idx) => {
+    setTimeout(() => {
+      const el = $('loadStep_' + idx);
+      if (el) {
+        el.classList.add('done');
+        el.innerHTML = `<span style="color: var(--brand-green); font-weight: 900;">✓</span> <span>${config.steps[idx]}</span>`;
+      }
+    }, stepDuration * (idx + 1) * 0.85);
+  });
+
+  setTimeout(() => {
+    backdrop.classList.remove('active');
+    if (callback) callback();
+  }, config.duration);
+}
+
+/* ─── NAVEGACIÓN DE PANTALLAS ─────────────────────────────── */
+function getScreenAccessState() {
+  return {
+    screen1: true,
+    screen2: Boolean(AppState.selectedBike) && AppState.paymentMethod === 'MK',
+    screen3: Boolean(AppState.selectedBike) && AppState.paymentMethod === 'MK',
+    screen4: AppState.personalDataValid && isDocumentApproved() && isFaceApproved() && !!document.getElementById('inputConsent')?.checked
+  };
+}
+
+function goToScreen(screenNumber) {
+  if (screenNumber < 1 || screenNumber > 4) return;
+
+  const accessState = getScreenAccessState();
+  if (screenNumber > AppState.currentScreen + 1 || (screenNumber > AppState.currentScreen && !accessState['screen' + screenNumber])) {
+    if (screenNumber === 4) {
+      alert('Antes de ver tu grupo debes completar la validación personal, la foto del documento y la verificación biométrica.');
+    } else if (screenNumber === 3) {
+      alert('Completa la configuración del plan y el flujo de validación antes de continuar.');
+    } else if (screenNumber === 2) {
+      alert('Selecciona el convenio de MotoKaizen para continuar con tu plan.');
+    }
+    return;
+  }
+
+  AppState.currentScreen = screenNumber;
+
+  closeProductPicker();
+
+  document.querySelectorAll('.screen-view').forEach(s => s.classList.remove('active'));
+  const target = $('screen-' + screenNumber);
+  if (target) target.classList.add('active');
+
+  document.querySelectorAll('.step-item').forEach((pill, idx) => {
+    const stepIdx = idx + 1;
+    pill.classList.toggle('active', stepIdx === screenNumber);
+    pill.classList.toggle('done', stepIdx < screenNumber);
+  });
+
+  if (screenNumber === 1) renderProductLanding();
+  if (screenNumber === 2) updateScreen2Plan();
+  if (screenNumber === 4) updateScreen4Group();
+  if (screenNumber === 3) setValidationStage(AppState.validationStage);
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+const VALIDATION_STAGES = [
+  { name: 'Datos personales', selector: '.validation-personal-field' },
+  { name: 'Documento de identidad', selector: '.validation-document-field' },
+  { name: 'Reconocimiento facial', selector: '.validation-face-field' },
+  { name: 'Confirmación', selector: '.validation-confirmation-field' }
+];
+
+function setValidationStage(stage) {
+  AppState.validationStage = Math.max(1, Math.min(4, stage));
+  const activeStage = AppState.validationStage;
+  const config = VALIDATION_STAGES[activeStage - 1];
+
+  document.querySelectorAll('.validation-personal-field, .validation-document-field, .validation-face-field, .validation-confirmation-field').forEach(element => {
+    element.classList.add('validation-panel');
+    element.classList.remove('is-active');
+  });
+  document.querySelectorAll(config.selector).forEach(element => {
+    element.classList.add('validation-panel', 'is-active');
+  });
+
+  const label = $('validationStageLabel');
+  const name = $('validationStageName');
+  const fill = $('validationStageBarFill');
+  const back = $('btnValidationBack');
+  const next = $('btnValidationNext');
+  if (label) label.textContent = `${activeStage} de ${VALIDATION_STAGES.length}`;
+  if (name) name.textContent = config.name;
+  if (fill) fill.style.width = `${(activeStage / VALIDATION_STAGES.length) * 100}%`;
+  if (back) back.textContent = activeStage === 1 ? '← Volver al plan' : '← Atrás';
+  if (next) next.textContent = activeStage === 4 ? 'Continuar con la asignación →' : 'Continuar';
+  updateValidationSummary();
+}
+
+function showValidationStageError(message) {
+  const error = $('validationStageError');
+  if (!error) return;
+  error.textContent = message || '';
+  error.classList.toggle('is-visible', Boolean(message));
+}
+
+function updateValidationSummary() {
+  const name = `${$('inputNombres')?.value.trim() || ''} ${$('inputApellidos')?.value.trim() || ''}`.trim();
+  if ($('summaryClientName')) $('summaryClientName').textContent = name || 'Pendiente';
+  if ($('summaryDocument')) $('summaryDocument').textContent = $('inputDocumento')?.value.trim() || 'Pendiente';
+  if ($('summaryDocumentStatus')) {
+    $('summaryDocumentStatus').textContent = AppState.docCheck.valid ? 'Comprobado por el servidor' : 'Pendiente';
+  }
+  if ($('summaryFaceStatus')) {
+    $('summaryFaceStatus').textContent = AppState.biometricVerified ? 'Rostro detectado' : 'Pendiente';
+  }
+}
+
+function goBackValidationStage() {
+  showValidationStageError('');
+  if (AppState.validationStage === 1) {
+    goToScreen(2);
+    return;
+  }
+  setValidationStage(AppState.validationStage - 1);
+}
+
+function advanceValidationStage() {
+  showValidationStageError('');
+
+  if (AppState.validationStage === 1) {
+    if (!validatePersonalForm({ focusOnError: true, includeDocument: false, includeConsent: false })) {
+      showValidationStageError('Revisa los campos marcados antes de continuar.');
+      return;
+    }
+    setValidationStage(2);
+    return;
+  }
+
+  if (AppState.validationStage === 2) {
+    if (!validatePersonalForm({ focusOnError: true, includeDocument: true, includeConsent: false })) {
+      showValidationStageError('Completa los datos del documento antes de continuar.');
+      return;
+    }
+    if (!AppState.docPhotoSet || !isDocumentApproved()) {
+      showValidationStageError('Ahora escanea tu cédula con la cámara para continuar.');
+      const camera = $('documentCamera');
+      if (camera) camera.style.display = 'block';
+      $('documentCameraPreview')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      openDocumentCamera();
+      return;
+    }
+    setValidationStage(3);
+    return;
+  }
+
+  if (AppState.validationStage === 3) {
+    if (!isFaceApproved()) {
+      showValidationStageError('La detección facial aún no está confirmada. Inicia la cámara y reintenta.');
+      return;
+    }
+    setValidationStage(4);
+    return;
+  }
+
+  if (!validatePersonalForm({ focusOnError: true, includeDocument: true })) {
+    showValidationStageError('Revisa los datos antes de confirmar.');
+    return;
+  }
+  if (!isDocumentApproved() || !isFaceApproved() || !$('inputConsent')?.checked) {
+    showValidationStageError('Todas las comprobaciones y el consentimiento son obligatorios.');
+    return;
+  }
+  handleFormSubmit({ preventDefault() {} });
+}
+
+/* ─── PANTALLA 1: PRODUCTO ESCANEADO (QR) ─────────────────── */
+function renderProductLanding() {
+  const bike = AppState.selectedBike;
+  if (!bike) return;
+
+  $('landBikeImg').src = bike.img;
+  $('landBikeBrand').textContent = bike.marca;
+  $('landBikeModel').textContent = bike.modelo;
+  $('landBikeSpecs').innerHTML = `
+    <span class="product-spec-chip">${bike.cc}</span>
+    <span class="product-spec-chip">${bike.hp}</span>
+    <span class="product-spec-chip">${bike.km}</span>`;
+  $('landBikePrice').textContent = formatCOP(bike.precio);
+
+  const cuota = Math.round(bike.precio / 30);
+  $('landCuotaTeaser').textContent = `Cuota desde ${formatCOP(cuota)} cada 15 o 30 días · Sin inicial · 0% de interés`;
+  $('payMethodMKPrice').innerHTML = `Plan quincenal o mensual · <span>0% de interés usurero</span> · 30 cuotas de ${formatCOP(cuota)}`;
+  $('payMethodContadoPrice').textContent = formatCOP(bike.precio);
+}
+
+function openProductPicker() {
+  renderBikesCatalog('picker');
+  $('productPickerModal').classList.add('open');
+}
+
+function closeProductPicker() {
+  const modal = $('productPickerModal');
+  if (modal) modal.classList.remove('open');
+}
+
+function selectPaymentMethod(method) {
+  AppState.paymentMethod = method;
+  $('payMethodMK').classList.toggle('active', method === 'MK');
+  $('payMethodContado').classList.toggle('active', method === 'CONTADO');
+}
+
+function acceptConvenio() {
+  if (AppState.paymentMethod !== 'MK') {
+    alert('El pago de contado se realiza directamente en caja de la tienda. Para continuar, selecciona de nuevo la opción del convenio MotoKaizen.');
+    selectPaymentMethod('MK');
+    return;
+  }
+  const bike = AppState.selectedBike;
+  const cuota = Math.round(bike.precio / 30);
+  showLoadingScreen({
+    title: 'Activando convenio de financiamiento...',
+    subtitle: `Verificando el convenio MotoKaizen vigente con la tienda para la ${bike.marca} ${bike.modelo}.`,
+    duration: 1900,
+    steps: [
+      `Confirmando convenio activo con la tienda aliada`,
+      `Consultando grupos de autofinanciamiento para ${bike.marca}`,
+      `Calculando tu cuota fija de ${formatCOP(cuota)} (30 pagos)`
+    ]
+  }, () => {
+    goToScreen(2);
+  });
+}
+
+/* ─── CATÁLOGO DE PRODUCTOS (MODAL DE LA TIENDA) ──────────── */
+function renderBikesCatalog(mode) {
+  const container = $('bikesCatalogGrid');
+  if (!container) return;
+  container.innerHTML = '';
+
+  MOTOS_DATA.forEach(bike => {
+    const cuotaCalculada = Math.round(bike.precio / 30);
+    const isSelected = AppState.selectedBike && AppState.selectedBike.id === bike.id;
+
+    const card = document.createElement('div');
+    card.className = 'bike-card';
+    if (isSelected) {
+      card.style.borderColor = 'var(--brand-orange)';
+    }
+
+    card.onclick = () => {
+      AppState.selectedBike = bike;
+      calculateFinancials();
+      renderProductLanding();
+      renderBikesCatalog('picker');
+      closeProductPicker();
+    };
+
+    card.innerHTML = `
+      <div class="bike-img-header">
+        <span class="bike-badge">${bike.badge}</span>
+        <img src="${bike.img}" alt="${bike.modelo}" loading="lazy">
+      </div>
+      <div class="bike-content">
+        <div>
+          <div class="bike-brand">${bike.marca}</div>
+          <div class="bike-model">${bike.modelo}</div>
+          <div class="bike-specs-table">
+            <div class="spec-cell"><label>Cilindraje</label><strong>${bike.cc}</strong></div>
+            <div class="spec-cell"><label>Potencia</label><strong>${bike.hp}</strong></div>
+            <div class="spec-cell"><label>Rendimiento</label><strong>${bike.km}</strong></div>
+          </div>
+        </div>
+        <div>
+          <div class="bike-financial-row">
+            <div class="price-contado">
+              <label>Precio Contado</label>
+              <strong>${formatCOP(bike.precio)}</strong>
+            </div>
+            <div class="price-cuota">
+              <label>Cuota Tanda (30 pagos)</label>
+              <strong>${formatCOP(cuotaCalculada)}</strong>
+            </div>
+          </div>
+          <button class="btn-select-bike">
+            ${isSelected ? '✓ Este es mi producto' : 'Elegir este producto →'}
+          </button>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+/* ─── CÁLCULO FINANCIERO (30 CUOTAS PURAS DIRECTAS) ────────── */
+function calculateFinancials() {
+  if (!AppState.selectedBike) return;
+  const precio = AppState.selectedBike.precio;
+
+  // Lógica de negocio MotoKaizen: 30 cuotas fijas directas
+  AppState.cuotaExacta = Math.round(precio / 30);
+  AppState.ahorroEstimado = Math.round(precio * 0.42);
+}
+
+/* ─── PANTALLA 2: PLAN DE CUOTAS ──────────────────────────── */
+function setFrequency(freq) {
+  AppState.frequency = freq;
+  $('cardFreqQuincenal').classList.toggle('active', freq === 'QUINCENAL');
+  $('cardFreqMensual').classList.toggle('active', freq === 'MENSUAL');
+  updateScreen2Plan();
+}
+
+function updateScreen2Plan() {
+  if (!AppState.selectedBike) return;
+  const bike = AppState.selectedBike;
+
+  $('previewBikeImg').src = bike.img;
+  $('previewBikeBrand').textContent = bike.marca;
+  $('previewBikeModel').textContent = bike.modelo;
+  $('previewBikeSpecs').textContent = `${bike.cc} · ${bike.hp} · ${bike.km}`;
+  $('previewBikePrice').textContent = formatCOP(bike.precio);
+
+  calculateFinancials();
+
+  const freqLabel = AppState.frequency === 'QUINCENAL' 
+    ? 'Tu Cuota Fija Quincenal (Cada 15 días)' 
+    : 'Tu Cuota Fija Mensual (Cada 30 días)';
+
+  $('labelCuotaType').textContent = freqLabel;
+  $('displayCuotaValue').textContent = formatCOP(AppState.cuotaExacta);
+  $('displayAhorroValue').textContent = `¡Te ahorras ${formatCOP(AppState.ahorroEstimado)} COP en intereses!`;
+}
+
+/* ─── PANTALLA 3: FORMULARIO DE VALIDACIÓN ────────────────── */
+const BIOMETRIC_FACE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+
+function updateDocPhotoUI(thumbSrc, hasDoc) {
+  const snapshot = $('documentCameraSnapshot');
+  if (thumbSrc && snapshot && hasDoc) {
+    snapshot.src = thumbSrc;
+    snapshot.style.display = 'block';
+  }
+}
+
+function setDocCheck(state, messageText) {
+  const pill = $('docCheckPill');
+  if (!pill) return;
+  pill.className = 'doc-check-pill ' + (state || 'idle');
+  pill.textContent = messageText || '⏳ Pendiente de verificación';
+}
+
+async function validateDocumentPhoto(dataUrl) {
+  AppState.docCheck = { valid: false, mode: 'server', message: '' };
+  setDocCheck('checking', '⏳ Verificando que sea un documento de identidad real...');
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 30000);
+  try {
+    const mimeType = dataUrl.match(/^data:(image\/[^;]+);base64,/i)?.[1] || 'image/jpeg';
+    const resp = await fetch('/api/verificar-documento', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        image: dataUrl.split(',')[1],
+        format: 'jpeg',
+        mime_type: mimeType
+      })
+    });
+    const raw = await resp.text();
+    let data;
+    try {
+      data = JSON.parse(raw);
+    } catch (parseError) {
+      throw new Error(`Respuesta inválida del servidor (${resp.status}).`);
+    }
+    if (!resp.ok) throw new Error(data.message || `El servidor respondió ${resp.status}.`);
+    if (data.ok && data.available) {
+      if (data.is_document) {
+        const type = data.document_class ? ' (' + data.document_class + ')' : '';
+        AppState.docCheck = { valid: true, mode: 'server', type: data.document_class, message: data.message };
+        setDocCheck('ok', '✓ ' + data.message + type);
+        $('documentCameraStatus').textContent = 'Documento confirmado. Puedes continuar al reconocimiento facial.';
+        $('btnRetakeDocument').style.display = 'inline-flex';
+        $('btnContinueDocument').style.display = 'inline-flex';
+        updateValidationSummary();
+      } else {
+        AppState.docCheck = { valid: false, mode: 'server', type: data.document_class, message: data.message };
+        setDocCheck('fail', data.message || 'No se reconoció un documento de identidad válido.');
+        $('documentCameraStatus').textContent = data.message || 'No se reconoció la cédula. Repite el escaneo con mejor iluminación y encuadre.';
+        $('btnRetakeDocument').style.display = 'inline-flex';
+        $('btnContinueDocument').style.display = 'none';
+        updateValidationSummary();
+      }
+    } else {
+      throw new Error(data.message || 'Servidor de validación de documentos no disponible.');
+    }
+  } catch (err) {
+    console.error('Validación de documento no disponible:', err);
+    const message = err.name === 'AbortError'
+      ? 'El análisis tardó demasiado. Repite el escaneo con la cédula completa y bien enfocada.'
+      : (err.message || 'No se pudo validar el documento.');
+    AppState.docCheck = { valid: false, mode: 'unavailable', message };
+    setDocCheck('fail', message);
+    $('documentCameraStatus').textContent = `${message} Puedes repetir la foto.`;
+    $('btnRetakeDocument').style.display = 'inline-flex';
+    $('btnContinueDocument').style.display = 'none';
+    showValidationStageError(message);
+  } finally {
+    clearTimeout(timeoutId);
+  }
+}
+
+let documentCameraStream = null;
+let documentOnboardingStep = 1;
+const DOCUMENT_ONBOARDING_KEY = 'motokaizen.document-camera-onboarding.v1';
+
+const DOCUMENT_ONBOARDING_STEPS = [
+  {
+    icon: '☀',
+    title: 'Busca buena iluminación',
+    tip: 'Evita reflejos y sombras. Coloca tu cédula en una superficie clara y bien iluminada.'
+  },
+  {
+    icon: '▣',
+    title: 'Mantén la cámara estable',
+    tip: 'Sujeta el celular con ambas manos y espera a que el texto se vea nítido antes de tomar la foto.'
+  },
+  {
+    icon: '▤',
+    title: 'Alinea toda la cédula',
+    tip: 'Ubica el documento dentro del marco, sin cortar las esquinas y sin cubrir sus datos.'
+  }
+];
+
+function hasSeenDocumentOnboarding() {
+  try {
+    return localStorage.getItem(DOCUMENT_ONBOARDING_KEY) === 'seen';
+  } catch (error) {
+    console.warn('No se pudo leer la preferencia del tutorial documental:', error);
+    return false;
+  }
+}
+
+function rememberDocumentOnboarding() {
+  try {
+    localStorage.setItem(DOCUMENT_ONBOARDING_KEY, 'seen');
+  } catch (error) {
+    console.warn('No se pudo guardar la preferencia del tutorial documental:', error);
+  }
+}
+
+function renderDocumentOnboardingStep() {
+  const step = DOCUMENT_ONBOARDING_STEPS[documentOnboardingStep - 1];
+  $('documentOnboardingIcon').textContent = step.icon;
+  $('documentOnboardingTitle').textContent = step.title;
+  $('documentOnboardingTip').textContent = step.tip;
+  $('btnDocumentOnboardingBack').style.visibility = documentOnboardingStep === 1 ? 'hidden' : 'visible';
+  $('btnDocumentOnboardingNext').textContent = documentOnboardingStep === DOCUMENT_ONBOARDING_STEPS.length ? 'Abrir cámara' : 'Siguiente';
+  document.querySelectorAll('[data-onboarding-dot]').forEach(dot => {
+    dot.classList.toggle('active', Number(dot.dataset.onboardingDot) <= documentOnboardingStep);
+  });
+}
+
+function showDocumentOnboarding() {
+  documentOnboardingStep = 1;
+  renderDocumentOnboardingStep();
+  $('documentOnboarding').classList.add('active');
+}
+
+function closeDocumentOnboarding() {
+  $('documentOnboarding').classList.remove('active');
+  rememberDocumentOnboarding();
+  startDocumentCamera();
+}
+
+function nextDocumentOnboardingStep() {
+  if (documentOnboardingStep < DOCUMENT_ONBOARDING_STEPS.length) {
+    documentOnboardingStep += 1;
+    renderDocumentOnboardingStep();
+    return;
+  }
+  closeDocumentOnboarding();
+}
+
+function previousDocumentOnboardingStep() {
+  if (documentOnboardingStep > 1) {
+    documentOnboardingStep -= 1;
+    renderDocumentOnboardingStep();
+  }
+}
+
+function skipDocumentOnboarding() {
+  closeDocumentOnboarding();
+}
+
+function stopDocumentCamera() {
+  if (documentCameraStream) {
+    documentCameraStream.getTracks().forEach(track => track.stop());
+    documentCameraStream = null;
+  }
+  const video = $('documentCameraVideo');
+  if (video) video.srcObject = null;
+}
+
+function openDocumentCamera() {
+  if (!hasSeenDocumentOnboarding()) {
+    showDocumentOnboarding();
+    return;
+  }
+  startDocumentCamera();
+}
+
+async function startDocumentCamera() {
+  const camera = $('documentCamera');
+  if (camera && camera.parentElement !== document.body) {
+    document.body.appendChild(camera);
+  }
+  if (camera) camera.style.display = 'flex';
+  camera?.classList.add('is-fullscreen');
+  const preview = $('documentCameraPreview');
+  const status = $('documentCameraStatus');
+  try {
+    if (!window.isSecureContext || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      status.textContent = 'Para usar la cámara dentro de la aplicación, abre este sitio mediante HTTPS o localhost. No se abrirá una cámara externa.';
+      return;
+    }
+    stopDocumentCamera();
+    documentCameraStream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 960 } }
+    });
+    const video = $('documentCameraVideo');
+    video.srcObject = documentCameraStream;
+    await video.play();
+    preview.classList.add('is-open');
+    $('documentCameraSnapshot').style.display = 'none';
+    $('btnOpenDocumentCamera').style.display = 'none';
+    $('btnCaptureDocument').style.display = 'inline-flex';
+    $('btnRetakeDocument').style.display = 'none';
+    status.textContent = 'Alinea el documento dentro del marco y toma la foto cuando el texto se vea nítido.';
+  } catch (error) {
+    console.error('No se pudo abrir la cámara documental:', error);
+    status.textContent = 'No se pudo activar la cámara dentro de la aplicación. Revisa el permiso y vuelve a intentarlo.';
+    preview.classList.remove('is-open');
+  }
+}
+
+function captureDocumentPhoto() {
+  const video = $('documentCameraVideo');
+  if (!video || !video.videoWidth) {
+    $('documentCameraStatus').textContent = 'La cámara todavía no está lista. Espera un momento y vuelve a intentar.';
+    return;
+  }
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+  stopDocumentCamera();
+  $('documentCameraSnapshot').src = dataUrl;
+  $('documentCameraSnapshot').style.display = 'block';
+  $('documentCameraVideo').style.display = 'none';
+  $('btnCaptureDocument').style.display = 'none';
+  $('btnRetakeDocument').style.display = 'inline-flex';
+  $('btnContinueDocument').style.display = 'none';
+  $('btnOpenDocumentCamera').style.display = 'none';
+  $('documentCameraStatus').textContent = 'Foto capturada. Validando legibilidad y tipo de documento...';
+  processDocumentPhoto(dataUrl);
+}
+
+function retakeDocumentPhoto() {
+  $('documentCameraVideo').style.display = 'block';
+  $('documentCameraSnapshot').style.display = 'none';
+  $('btnContinueDocument').style.display = 'none';
+  openDocumentCamera();
+}
+
+function continueFromDocumentCamera() {
+  if (!isDocumentApproved()) {
+    showValidationStageError('El servidor todavía no ha confirmado el documento.');
+    return;
+  }
+  stopDocumentCamera();
+  const camera = $('documentCamera');
+  if (camera) {
+    camera.style.display = 'none';
+    camera.classList.remove('is-fullscreen');
+    if (camera.parentElement === document.body) {
+      $('clientForm')?.querySelector('.validation-document-field')?.appendChild(camera);
+    }
+  }
+  setValidationStage(3);
+}
+
+function processDocumentPhoto(dataUrl) {
+  AppState.docPhotoSet = true;
+  AppState.docCheck = { valid: false, mode: 'checking', type: null, message: '' };
+  updateDocPhotoUI(dataUrl, true);
+  validateDocumentPhoto(dataUrl);
+}
+
+function handleDocFotoChange(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    processDocumentPhoto(ev.target.result);
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearDocFoto(event) {
+  event.stopPropagation();
+  stopDocumentCamera();
+  AppState.docPhotoSet = false;
+  AppState.docCheck = { valid: false, mode: 'none', message: '' };
+  const input = $('inputDocFoto');
+  if (input) input.value = '';
+  updateDocPhotoUI(null, false);
+  setDocCheck('idle', '⏳ Pendiente de verificación');
+  if ($('documentCamera')) $('documentCamera').style.display = 'none';
+  $('documentCamera')?.classList.remove('is-fullscreen');
+  $('documentCameraPreview')?.classList.remove('is-open');
+  if ($('documentCamera')) $('documentCamera').style.display = 'none';
+  $('documentCameraVideo').style.display = 'block';
+  $('documentCameraSnapshot').style.display = 'none';
+  $('btnOpenDocumentCamera').style.display = 'inline-flex';
+  $('btnCaptureDocument').style.display = 'none';
+  $('btnRetakeDocument').style.display = 'none';
+  $('btnContinueDocument').style.display = 'none';
+  $('documentCameraStatus').textContent = 'Ubica el documento dentro del marco y asegúrate de que el texto sea legible.';
+}
+
+function ensureFormErrorNode(field) {
+  if (!field) return null;
+  let message = field.querySelector('.field-error-message');
+  if (!message) {
+    message = document.createElement('small');
+    message.className = 'field-error-message';
+    field.appendChild(message);
+  }
+  return message;
+}
+
+function clearFieldErrors() {
+  document.querySelectorAll('#clientForm .form-field').forEach(field => {
+    field.classList.remove('invalid');
+    const message = field.querySelector('.field-error-message');
+    if (message) message.textContent = '';
+  });
+  const consentError = document.getElementById('consentError');
+  if (consentError) consentError.textContent = '';
+}
+
+function showFieldError(fieldId, message) {
+  const field = document.getElementById(fieldId);
+  if (!field) return false;
+  const wrapper = field.closest('.form-field');
+  if (wrapper) {
+    wrapper.classList.add('invalid');
+    const messageNode = ensureFormErrorNode(wrapper);
+    if (messageNode) messageNode.textContent = message;
+  }
+  return true;
+}
+
+function validatePersonalForm({ focusOnError = true, includeDocument = true, includeConsent = true } = {}) {
+  clearFieldErrors();
+
+  const values = {
+    nombres: $('inputNombres').value.trim(),
+    apellidos: $('inputApellidos').value.trim(),
+    email: $('inputEmail').value.trim(),
+    telefono: $('inputTelefono').value.trim(),
+    tipoDoc: $('inputTipoDoc').value.trim(),
+    documento: $('inputDocumento').value.trim(),
+    ciudad: $('inputCiudad').value.trim(),
+    ocupacion: $('inputOcupacion').value.trim(),
+    consent: $('inputConsent').checked
+  };
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneDigits = values.telefono.replace(/\D+/g, '');
+  const docToken = values.documento.replace(/[^A-Za-z0-9]/g, '');
+  let firstInvalidField = null;
+
+  if (values.nombres.length < 2) {
+    showFieldError('inputNombres', 'Ingresa tus nombres completos.');
+    if (!firstInvalidField) firstInvalidField = 'inputNombres';
+  }
+  if (values.apellidos.length < 2) {
+    showFieldError('inputApellidos', 'Ingresa tus apellidos completos.');
+    if (!firstInvalidField) firstInvalidField = 'inputApellidos';
+  }
+  if (!emailPattern.test(values.email)) {
+    showFieldError('inputEmail', 'Ingresa un correo electrónico válido.');
+    if (!firstInvalidField) firstInvalidField = 'inputEmail';
+  }
+  if (phoneDigits.length < 7) {
+    showFieldError('inputTelefono', 'Ingresa un número móvil válido.');
+    if (!firstInvalidField) firstInvalidField = 'inputTelefono';
+  }
+  if (includeDocument && !values.tipoDoc) {
+    showFieldError('inputTipoDoc', 'Selecciona un tipo de documento.');
+    if (!firstInvalidField) firstInvalidField = 'inputTipoDoc';
+  }
+  if (includeDocument && docToken.length < 6) {
+    showFieldError('inputDocumento', 'El número del documento no es válido.');
+    if (!firstInvalidField) firstInvalidField = 'inputDocumento';
+  }
+  if (!values.ciudad) {
+    showFieldError('inputCiudad', 'Selecciona tu ciudad de radicación.');
+    if (!firstInvalidField) firstInvalidField = 'inputCiudad';
+  }
+  if (!values.ocupacion) {
+    showFieldError('inputOcupacion', 'Selecciona tu ocupación.');
+    if (!firstInvalidField) firstInvalidField = 'inputOcupacion';
+  }
+  if (includeConsent && !values.consent) {
+    const consentError = document.getElementById('consentError');
+    if (consentError) consentError.textContent = 'Debes aceptar el tratamiento de tus datos para continuar.';
+    if (!firstInvalidField) firstInvalidField = 'inputConsent';
+  }
+
+  AppState.personalDataValid = firstInvalidField === null;
+
+  if (focusOnError && firstInvalidField) {
+    const firstElement = document.getElementById(firstInvalidField);
+    if (firstElement) firstElement.focus();
+  }
+
+  if (AppState.personalDataValid) {
+    AppState.client = {
+      nombres: values.nombres,
+      apellidos: values.apellidos,
+      email: values.email,
+      tipoDoc: values.tipoDoc,
+      documento: values.documento,
+      telefono: values.telefono,
+      ciudad: values.ciudad,
+      ocupacion: values.ocupacion
+    };
+  }
+
+  return AppState.personalDataValid;
+}
+
+/* ─── VERIFICACIÓN BIOMÉTRICA REAL (CÁMARA) + FALLBACK ───── */
+let biometricStream = null;
+let biometricScanTimer = null;
+let biometricConfirmationPending = false;
+const BIOMETRIC_SCAN_MAX_MS = 30000;
+
+function stopBiometricCamera() {
+  if (biometricScanTimer) { clearInterval(biometricScanTimer); biometricScanTimer = null; }
+  if (biometricStream) {
+    biometricStream.getTracks().forEach(t => t.stop());
+    biometricStream = null;
+  }
+  const video = $('biometricVideo');
+  if (video) video.srcObject = null;
+}
+
+function showBiometricOverlay(title, subtitle) {
+  $('biometricTitle').textContent = title;
+  $('biometricSubtitle').textContent = subtitle;
+  const fill = $('biometricProgressFill');
+  fill.style.width = '0%';
+  fill.style.background = 'var(--brand-orange)';
+  $('biometricBackdrop').classList.add('active');
+}
+
+function showBiometricFrame(svgMode) {
+  const frame = $('biometricFaceFrame');
+  frame.style.display = 'flex';
+  frame.innerHTML = svgMode
+    ? BIOMETRIC_FACE_SVG + '<div class="biometric-scanline"></div>'
+    : '<div class="biometric-success-icon">✓</div>';
+  $('biometricVideoWrap').style.display = 'none';
+}
+
+function captureBiometricFrame() {
+  const video = $('biometricVideo');
+  const w = video.videoWidth || 640;
+  const h = video.videoHeight || 480;
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  canvas.getContext('2d').drawImage(video, 0, 0, w, h);
+  return canvas.toDataURL('image/jpeg', 0.7);
+}
+
+async function requestBiometricCamera() {
+  showBiometricOverlay('Solicitando acceso a la cámara', 'De el permiso para usar la cámara y validar su rostro. Ninguna imagen se guarda.');
+  stopBiometricCamera();
+  try {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      throw new Error('getUserMedia no soportado');
+    }
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: false,
+      video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }
+    });
+    biometricStream = stream;
+    const video = $('biometricVideo');
+    video.srcObject = stream;
+    try { await video.play(); } catch (err) { /* muted/autoplay suele bastar */ }
+    runCameraScan();
+  } catch (err) {
+    console.warn('Cámara no disponible:', err);
+    showBiometricUnavailable('No se pudo acceder a la cámara. No se puede confirmar la identidad sin una captura real.');
+  }
+}
+
+function runCameraScan() {
+  biometricConfirmationPending = false;
+  $('biometricFaceFrame').style.display = 'none';
+  $('biometricVideoWrap').style.display = 'block';
+  $('biometricTitle').textContent = 'Verificación Biométrica';
+  $('biometricSubtitle').textContent = 'Acérquese a la cámara y conserve el rostro dentro del marco hasta la confirmación.';
+  $('biometricProgressFill').style.width = '0%';
+  $('biometricProgressFill').style.background = 'var(--brand-orange)';
+  const fbBtn = $('btnBiometricFallback');
+  if (fbBtn) fbBtn.style.display = 'inline-flex';
+
+  const start = Date.now();
+  biometricScanTimer = setInterval(async () => {
+    const elapsed = Date.now() - start;
+    $('biometricProgressFill').style.width = Math.min(100, Math.round((elapsed / BIOMETRIC_SCAN_MAX_MS) * 100)) + '%';
+    try {
+      const frame = captureBiometricFrame();
+      const resp = await fetch('/api/validate-face', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: frame.split(',')[1], format: 'jpeg' })
+      });
+      const data = await resp.json();
+      if (data.ok && data.available && data.face_detected) {
+        if (!biometricConfirmationPending) {
+          biometricConfirmationPending = true;
+          $('biometricTitle').textContent = 'Rostro detectado';
+          $('biometricSubtitle').textContent = 'Escaneando el rostro... manténgase quieto un momento.';
+          $('biometricProgressFill').style.width = '100%';
+          setTimeout(() => {
+            if (biometricConfirmationPending) biometricSuccess();
+          }, 1200);
+        }
+        return;
+      }
+      if (data.ok && data.available) {
+        $('biometricSubtitle').textContent = 'Aún no se detecta su rostro. Ubíquese frente a la cámara...';
+      } else {
+        throw new Error(data.message || 'Análisis facial no disponible');
+      }
+    } catch (err) {
+      console.warn('Servidor de análisis facial no disponible:', err);
+      stopBiometricCamera();
+      showBiometricUnavailable('El servidor de análisis facial no respondió. No se puede confirmar la identidad.');
+      return;
+    }
+    if (elapsed >= BIOMETRIC_SCAN_MAX_MS) {
+      stopBiometricCamera();
+      $('biometricSubtitle').textContent = 'No se pudo confirmar el rostro. Revisa la iluminación y reintenta con la cámara.';
+      $('biometricProgressFill').style.width = '100%';
+      const fb = $('btnBiometricFallback');
+      if (fb) fb.style.display = 'inline-flex';
+    }
+  }, 500);
+}
+
+function retryBiometricVerification() {
+  stopBiometricCamera();
+  startBiometricVerification();
+}
+
+function showBiometricUnavailable(note) {
+  biometricConfirmationPending = false;
+  const frame = $('biometricFaceFrame');
+  const title = $('biometricTitle');
+  const subtitle = $('biometricSubtitle');
+  const fill = $('biometricProgressFill');
+
+  frame.style.display = 'flex';
+  frame.innerHTML = BIOMETRIC_FACE_SVG + '<div class="biometric-scanline"></div>';
+  $('biometricVideoWrap').style.display = 'none';
+  title.textContent = 'Verificación no disponible';
+  subtitle.textContent = note || 'No se puede confirmar la identidad sin cámara y servidor de análisis.';
+  fill.style.width = '100%';
+  fill.style.background = '#dc2626';
+  const fb = $('btnBiometricFallback');
+  if (fb) {
+    fb.textContent = 'Reintentar cámara';
+    fb.style.display = 'inline-flex';
+  }
+  $('biometricBackdrop').classList.add('active');
+  AppState.biometricVerified = false;
+  const pill = $('biometricStatusPill');
+  if (pill) {
+    pill.textContent = 'No confirmado';
+    pill.classList.remove('verified');
+  }
+}
+
+function startBiometricVerification() {
+  const canUseCamera = navigator.mediaDevices &&
+    navigator.mediaDevices.getUserMedia &&
+    window.isSecureContext;
+  if (canUseCamera) {
+    requestBiometricCamera();
+  } else {
+    showBiometricUnavailable('La cámara requiere un contexto seguro (https o localhost). Abre el servidor local y vuelve a intentarlo.');
+  }
+}
+
+function biometricSuccess() {
+  stopBiometricCamera();
+  biometricConfirmationPending = false;
+  AppState.biometricVerified = true;
+  AppState.biometricMode = 'none';
+
+  const frame = $('biometricFaceFrame');
+  frame.style.display = 'flex';
+  frame.innerHTML = '<div class="biometric-success-icon">✓</div>';
+  $('biometricVideoWrap').style.display = 'none';
+  $('biometricTitle').textContent = 'Rostro detectado';
+  $('biometricSubtitle').textContent = 'La presencia de una persona fue detectada. Puedes continuar.';
+  $('biometricProgressFill').style.width = '100%';
+  $('biometricProgressFill').style.background = '#4b5563';
+  const fb = $('btnBiometricFallback');
+  if (fb) {
+    fb.textContent = 'Reintentar cámara';
+    fb.style.display = 'inline-flex';
+  }
+
+  const pill = $('biometricStatusPill');
+  pill.textContent = '✓ Rostro detectado';
+  pill.classList.add('verified');
+  $('btnStartBiometric').textContent = 'Reintentar verificación';
+  updateValidationSummary();
+
+  setTimeout(() => {
+    $('biometricBackdrop').classList.remove('active');
+  }, 2200);
+}
+
+function handleFormSubmit(e) {
+  e.preventDefault();
+
+  if (!validatePersonalForm({ focusOnError: true })) {
+    $('inputNombres').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  if (!AppState.docPhotoSet) {
+    alert('Por favor escanea tu documento de identidad con la cámara.');
+    $('documentCameraPreview').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  if (AppState.docCheck && AppState.docCheck.mode === 'server' && !AppState.docCheck.valid) {
+    alert('El escaneo no se reconoce como un documento de identidad válido. Repite la captura y alinea la cédula dentro del marco.');
+    $('documentCameraPreview').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  if (!isFaceApproved()) {
+    alert('Para continuar debes completar la detección facial con la cámara.');
+    $('btnStartBiometric').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  AppState.client = {
+    nombres: $('inputNombres').value.trim() || 'David',
+    apellidos: $('inputApellidos').value.trim() || 'Rendón',
+    email: $('inputEmail').value.trim() || 'cliente@correo.com',
+    tipoDoc: $('inputTipoDoc').value || 'Cédula de Ciudadanía',
+    documento: $('inputDocumento').value.trim() || '1035928174',
+    telefono: $('inputTelefono').value.trim() || '312 894 5621',
+    ciudad: $('inputCiudad').value || 'Medellín',
+    ocupacion: $('inputOcupacion').value || 'Independiente'
+  };
+
+  buildGroupMembers();
+  const g = AppState.group;
+
+  showLoadingScreen({
+    title: 'Validando identidad y asignando grupo...',
+    subtitle: `Validando a ${AppState.client.nombres} ${AppState.client.apellidos} para el consorcio MotoKaizen.`,
+    duration: 2800,
+    steps: [
+      `Validando ${AppState.client.tipoDoc} ${AppState.client.documento}`,
+      `Verificación biométrica del rostro aprobada`,
+      `Confirmando disponibilidad de grupo (siempre disponible en demostración)`,
+      `Asignando cupo #${g.meCupo} en el grupo ${g.code}`,
+      `Enviando notificación al correo ${AppState.client.email}`
+    ]
+  }, () => {
+    goToScreen(4);
+  });
+}
+
+/* ─── PANTALLA 4: GRUPO DE 30 ─────────────────────────────── */
+function buildGroupMembers() {
+  const members = [];
+  const meCupo = 1 + Math.floor(Math.random() * 30);
+
+  let compIndex = 0;
+  for (let cupo = 1; cupo <= 30; cupo++) {
+    if (cupo === meCupo) {
+      members.push({
+        cupo: cupo,
+        nombre: `${AppState.client.nombres} ${AppState.client.apellidos}`,
+        ciudad: AppState.client.ciudad,
+        isMe: true
+      });
+    } else {
+      const c = COMPANEROS_NAMES[compIndex];
+      compIndex++;
+      members.push({
+        cupo: cupo,
+        nombre: c.n,
+        ciudad: c.c,
+        isMe: false
+      });
+    }
+  }
+
+  const modelTag = AppState.selectedBike ? AppState.selectedBike.modelo.split(' ')[0].toUpperCase() : 'MOTO';
+  const randSuffix = 100 + Math.floor(Math.random() * 900);
+  AppState.group = {
+    code: `#KZ-30-${modelTag}-${randSuffix}`,
+    meCupo: meCupo,
+    members: members
+  };
+}
+
+function updateScreen4Group() {
+  if (!AppState.selectedBike) return;
+  $('displayGroupMoto').textContent = AppState.selectedBike.modelo;
+  $('displayGroupCupo').textContent = `Cupo #${AppState.group.meCupo}`;
+  $('kpiGroupCode').textContent = AppState.group.code;
+  $('kpiGroupFondo').textContent = formatCOP(AppState.selectedBike.precio);
+
+  $('emailNoticeAddress').textContent = AppState.client.email;
+  $('emailNoticeBody').textContent = `Adjuntamos el detalle del grupo ${AppState.group.code} y tu cupo #${AppState.group.meCupo} en el consorcio MotoKaizen. En un entorno productivo, un asesor se contactará contigo para coordinar la entrega de tu vehículo.`;
+
+  const container = $('membersMosaicGrid');
+  container.innerHTML = '';
+
+  AppState.group.members.forEach(member => {
+    const initials = member.nombre.split(' ').map(part => part[0]).slice(0, 2).join('');
+    const cardClass = 'member-card-cell' + (member.isMe ? ' is-me' : '');
+
+    container.innerHTML += `
+      <div class="${cardClass}">
+        ${member.isMe ? '<div class="member-tag-top me">¡Tú!</div>' : ''}
+        <div class="member-avatar-icon">${member.isMe ? '👑' : initials}</div>
+        <div class="member-cupo-num">Cupo #${member.cupo}</div>
+        <div class="member-fullname">${member.nombre}</div>
+        <div class="member-city-text">${member.ciudad}</div>
+        <div class="member-status-pill">✓ Cuota al Día</div>
+      </div>
+    `;
+  });
+}
+
+/* ─── REINICIAR SIMULACIÓN ────────────────────────────────── */
+function resetSimulation() {
+  stopDocumentCamera();
+  AppState.currentScreen = 1;
+  AppState.validationStage = 1;
+  AppState.frequency = 'QUINCENAL';
+  AppState.paymentMethod = 'MK';
+  AppState.biometricVerified = false;
+  AppState.biometricMode = 'none';
+  AppState.docPhotoSet = false;
+  AppState.personalDataValid = false;
+  AppState.docCheck = { valid: false, mode: 'none', type: null, message: '' };
+  AppState.group = { code: '#KZ-30', meCupo: 14, members: [] };
+
+  const form = $('clientForm');
+  if (form) form.reset();
+  const docInput = $('inputDocFoto');
+  if (docInput) docInput.value = '';
+  clearFieldErrors();
+  updateDocPhotoUI(null, false);
+  setDocCheck('idle', '⏳ Pendiente de verificación');
+  if ($('documentCamera')) $('documentCamera').style.display = 'none';
+  $('documentCamera')?.classList.remove('is-fullscreen');
+  $('documentCameraPreview')?.classList.remove('is-open');
+  if ($('documentCameraVideo')) $('documentCameraVideo').style.display = 'block';
+  if ($('documentCameraSnapshot')) $('documentCameraSnapshot').style.display = 'none';
+  if ($('btnOpenDocumentCamera')) $('btnOpenDocumentCamera').style.display = 'inline-flex';
+  if ($('btnCaptureDocument')) $('btnCaptureDocument').style.display = 'none';
+  if ($('btnRetakeDocument')) $('btnRetakeDocument').style.display = 'none';
+  if ($('btnContinueDocument')) $('btnContinueDocument').style.display = 'none';
+  showValidationStageError('');
+  setValidationStage(1);
+
+  const pill = $('biometricStatusPill');
+  if (pill) { pill.textContent = '⏳ Pendiente de verificación'; pill.classList.remove('verified'); }
+  const btn = $('btnStartBiometric');
+  if (btn) btn.textContent = '📷 Iniciar verificación';
+
+  buildGroupMembers();
+  renderBikesCatalog('picker');
+  renderProductLanding();
+  goToScreen(1);
+}
+
+function attachFormValidationListeners() {
+  const fieldsToWatch = ['inputNombres', 'inputApellidos', 'inputEmail', 'inputTelefono', 'inputTipoDoc', 'inputDocumento', 'inputCiudad', 'inputOcupacion'];
+  fieldsToWatch.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', () => {
+      if (AppState.currentScreen === 3) validatePersonalForm({ focusOnError: false, includeDocument: AppState.validationStage >= 2, includeConsent: AppState.validationStage === 4 });
+    });
+    el.addEventListener('change', () => {
+      if (AppState.currentScreen === 3) validatePersonalForm({ focusOnError: false, includeDocument: AppState.validationStage >= 2, includeConsent: AppState.validationStage === 4 });
+    });
+  });
+  const consent = document.getElementById('inputConsent');
+  if (consent) {
+    consent.addEventListener('change', () => {
+      if (AppState.currentScreen === 3) validatePersonalForm({ focusOnError: false, includeDocument: true, includeConsent: AppState.validationStage === 4 });
+    });
+  }
+}
+
+/* ─── INICIALIZACIÓN ──────────────────────────────────────── */
+function initSimulator() {
+  buildGroupMembers();
+  renderBikesCatalog('picker');
+  renderProductLanding();
+  calculateFinancials();
+  attachFormValidationListeners();
+
+  // En móviles, el input de foto del documento abre directamente la cámara
+  const fileInput = $('inputDocFoto');
+  if (fileInput && navigator.maxTouchPoints > 0) {
+    fileInput.setAttribute('capture', 'environment');
+  }
+}
+
+document.addEventListener('DOMContentLoaded', initSimulator);
+if (document.readyState === 'complete' || document.readyState === 'interactive') {
+  initSimulator();
+}
+</script>
+</body>
+</html>

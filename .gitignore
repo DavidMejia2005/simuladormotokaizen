@@ -1,0 +1,30 @@
+# Secrets and local TLS material
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+
+# Python generated files and local environments
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+
+# Local tooling and installed dependencies
+node_modules/
+.opencode/
+.agent/
+
+# Local OCR/cache output
+*.log
+.cache/
+
+# OS/editor metadata
+.DS_Store
+Thumbs.db
+.vscode/
