@@ -3,8 +3,10 @@
 """
 Servidor del Simulador MotoKaizen
 =================================
-Sirve el simulador (index.html) y expone el endpoint de validación facial
-POST /api/validate-face usando OpenCV (detección de objetos con Haar cascade).
+Sirve el simulador (index.html), expone la consulta de productos reales
+GET /api/producto?barcode=... (Odoo JSON-RPC) y el endpoint de validación
+facial POST /api/validate-face usando OpenCV (detección de objetos con
+Haar cascade).
 
 Uso:
     python servidor-simulador.py [puerto] [host]
@@ -28,10 +30,19 @@ import unicodedata
 from datetime import datetime, timedelta, timezone
 from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import unquote, urlparse
+from urllib.parse import parse_qs, unquote, urlparse
 
 import numpy as np  # dependencia de OpenCV; requerida para el análisis de imágenes
 from document_decisions import classify_document, is_openai_configured
+from odoo_client import (
+    OdooError,
+    OdooNotConfigured,
+    OdooProductNotFound,
+    OdooRequestError,
+    get_product_by_barcode,
+    is_odoo_configured,
+    odoo_status,
+)
 
 try:
     from cryptography import x509
@@ -427,8 +438,81 @@ def _status_payload():
         "message": _face_message or "Servicio disponible.",
         "document_classifier": "openai_decisions",
         "openai_configured": is_openai_configured(),
-        "endpoints": ["/api/validate-face", "/api/verificar-documento", "/api/status"],
+        "odoo": odoo_status(),
+        "odoo_configured": is_odoo_configured(),
+        "endpoints": [
+            "/api/producto",
+            "/api/validate-face",
+            "/api/verificar-documento",
+            "/api/status",
+        ],
     }
+
+
+def _product_response(barcode):
+    """Respuesta de /api/producto?barcode=... Devuelve (payload, código HTTP)."""
+    barcode = (barcode or "").strip()
+    if not barcode:
+        return {
+            "ok": False,
+            "found": False,
+            "error": "Falta el parámetro barcode.",
+        }, 400
+    if len(barcode) > 128:
+        return {
+            "ok": False,
+            "found": False,
+            "barcode": barcode,
+            "error": "El código de barras es demasiado largo.",
+        }, 400
+
+    try:
+        product = get_product_by_barcode(barcode)
+    except OdooNotConfigured as exc:
+        return {
+            "ok": False,
+            "found": False,
+            "configured": False,
+            "status": "not_configured",
+            "barcode": barcode,
+            "error": str(exc),
+            "hint": "Configura ODOO_URL, ODOO_DB, ODOO_USERNAME y ODOO_API_KEY en Vercel o en .env.",
+        }, 200
+    except OdooProductNotFound as exc:
+        return {
+            "ok": False,
+            "found": False,
+            "configured": True,
+            "status": "not_found",
+            "barcode": barcode,
+            "error": str(exc),
+        }, 200
+    except OdooRequestError as exc:
+        return {
+            "ok": False,
+            "found": False,
+            "configured": True,
+            "status": "odoo_error",
+            "barcode": barcode,
+            "error": str(exc),
+        }, 200
+    except OdooError as exc:
+        return {
+            "ok": False,
+            "found": False,
+            "configured": True,
+            "status": "odoo_error",
+            "barcode": barcode,
+            "error": str(exc),
+        }, 200
+
+    return {
+        "ok": True,
+        "found": True,
+        "source": "odoo",
+        "barcode": barcode,
+        "product": product,
+    }, 200
 
 
 def _decode_image_request(payload):
@@ -536,6 +620,12 @@ class SimuladorHandler(BaseHTTPRequestHandler):
         path = unquote(parsed.path)
         if path == "/api/status":
             self._send_json(_status_payload())
+            return
+        if path == "/api/producto":
+            params = parse_qs(parsed.query)
+            barcode = (params.get("barcode") or [""])[0]
+            payload, code = _product_response(barcode)
+            self._send_json(payload, code)
             return
         if path == "/":
             self._send_static("index.html")
@@ -648,6 +738,10 @@ def main():
     else:
         print("OK: detección de rostro por OpenCV disponible (Haar cascade).")
     print("Clasificación documental: OpenAI Decisions API (requiere OPENAI_API_KEY).")
+    if is_odoo_configured():
+        print("Productos reales: Odoo configurado para /api/producto.")
+    else:
+        print("AVISO: Odoo no configurado; /api/producto responderá 503 hasta definir ODOO_URL, ODOO_DB, ODOO_USERNAME y ODOO_API_KEY.")
     print("Presiona Ctrl+C para detener el servidor.")
     try:
         httpd.serve_forever()
@@ -702,6 +796,11 @@ def app(environ, start_response):
     if method in ("GET", "HEAD"):
         if path == "/api/status":
             return _wsgi_json(start_response, _status_payload())
+        if path == "/api/producto":
+            params = parse_qs(environ.get("QUERY_STRING") or "")
+            barcode = (params.get("barcode") or [""])[0]
+            payload, code = _product_response(barcode)
+            return _wsgi_json(start_response, payload, code)
         if path.startswith("/api/"):
             return _wsgi_json(start_response, {"ok": False, "error": "Endpoint no existe"}, 404)
         rel = path.lstrip("/")

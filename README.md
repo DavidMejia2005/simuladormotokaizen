@@ -14,16 +14,42 @@ Este simulador fue diseñado especialmente para **personas no técnicas** (clien
 3. ¡Listo! Se abrirá instantáneamente en tu navegador web predeterminado (Google Chrome, Microsoft Edge, etc.) sin necesidad de instalar Java, Docker o bases de datos.
    - **Nota:** abriéndolo como archivo (`file://`) no se puede usar la cámara ni el análisis de identidad; abre el servidor local para ejecutar las validaciones reales.
 
-### Auto-carga de producto desde el QR de Odoo
-El simulador lee el parámetro `barcode` de la URL y precarga la ficha del producto antes de que el cliente interactúe:
+### Auto-carga de producto real desde el QR de Odoo
+El simulador lee el parámetro `barcode` de la URL y consulta el producto en Odoo antes de mostrar la ficha:
 
 ```
-https://simulador-cliente-2.vercel.app/?barcode=SEL-42171082014822
+https://simuladormotokaizen.vercel.app/?barcode=ESC-42865619468495
 ```
 
-- Si el código coincide con el `barcode` o el `default_code` del catálogo local, se muestran marca, modelo, código y precio a financiar del producto correspondiente.
-- Si no hay coincidencia, se conserva el código escaneado y se muestra una ficha de referencia del catálogo con un aviso visible, para que la simulación pueda continuar aunque no haya una API de productos disponible en Vercel.
-- Sin el parámetro `barcode`, el simulador mantiene su comportamiento normal con el producto por defecto.
+- El backend busca en `product.product` por `barcode` y, si no encuentra, por `default_code`.
+- Se muestran **nombre, código, precio, moneda, imagen, categoría, unidad, disponibilidad, descripción y atributos reales** del producto.
+- **No hay fallback a productos de demostración** cuando la URL trae un `barcode`: si Odoo no está configurado o el producto no existe, la interfaz muestra un error visible y bloquea el avance con datos falsos.
+- La integración usa JSON-RPC de Odoo. Las credenciales viven solo en el backend.
+- Sin el parámetro `barcode`, el simulador conserva su comportamiento de demostración con el catálogo local.
+
+#### Configuración de Odoo
+Copia `.env.example` como `.env` y define:
+
+```env
+ODOO_URL=https://tuempresa.odoo.com
+ODOO_DB=tu_base_de_datos
+ODOO_USERNAME=usuario@empresa.com
+ODOO_API_KEY=tu_api_key
+```
+
+En Odoo Online, `ODOO_DB` suele ser el subdominio de la instancia (por ejemplo, `miempresa` para `https://miempresa.odoo.com`).
+
+El precio se toma de `lst_price` (o `list_price`) del producto en Odoo. Si el producto usa reglas de lista de precios, el simulador puede ampliarse para calcular ese precio exacto.
+
+En Vercel, agrega esas mismas variables en **Project Settings → Environment Variables** y vuelve a desplegar. El usuario de Odoo necesita permiso de lectura sobre `product.product`, `product.template.attribute.value` y campos de imagen/precio. La API key no se envía al navegador.
+
+> La API externa de Odoo debe estar habilitada en el plan/instancia. En Odoo Online, la API externa está disponible en planes Custom; en Odoo.sh o instalaciones propias depende de la configuración del servidor.
+
+El endpoint interno de consulta es:
+
+```
+GET /api/producto?barcode=ESC-42865619468495
+```
 
 ### Opción 2: Con cámara real (Python + OpenCV) — Recomendada para la demo
 1. Asegúrate de tener **Python 3** instalado y ejecuta `python -m pip install -r requirements.txt`. Copia `.env.example` como `.env` y reemplaza `sk-proj-reemplazar` por tu clave real. El servidor carga `.env` automáticamente; la clave solo se usa en el backend y no se envía al navegador.
@@ -48,13 +74,13 @@ Si levantas el backend (`docker compose up` o `mvnw spring-boot:run`):
 El recorrido sigue las **4 etapas clave** del viaje de un cliente en MotoKaizen, desde que escanea el producto en la tienda hasta su asignación formal al grupo:
 
 ### 1. Producto Escaneado en Tienda (Código QR) 📱
-- Simula el flujo real de tienda: el cliente toma la foto al producto y **escanea su código QR** en un establecimiento con convenio.
-- Ficha del producto escaneado: marca, modelo, especificaciones (cilindraje, potencia, rendimiento) y **valor comercial**.
+- Ejecuta el flujo real de tienda: el cliente **escanea el código QR** del producto en un establecimiento con convenio.
+- Ficha del producto escaneado: nombre, código, especificaciones, imagen y **precio real consultados en Odoo**.
 - **Métodos de pago disponibles:**
   - **Convenio de Financiamiento MotoKaizen** (🏪 Tienda Aliada): autofinanciamiento colectivo en tandas de 30, cuota fija en 30 pagos, sin crédito bancario ni consultas de Datacrédito.
   - **Pago de contado en tienda**.
 - Botón **"Sí, quiero pagar con el Plan de Moto Kaizen →"** para aceptar el convenio.
-- Selector **"Elegir otro producto de la tienda"**: catálogo interactivo con los 6 modelos (**Yamaha NMAX 155**, **Bajaj Pulsar NS200**, **Suzuki Gixxer 150**, **KTM Duke 200**, **Honda CB 125F**, **Yamaha MT-03**), fichas técnicas y precio de contado.
+- Selector **"Elegir otro producto de la tienda"**: disponible solo en el modo sin QR; el flujo con `?barcode=` no permite reemplazar el producto real por fichas de demostración.
 
 ### 2. Configuración del Plan & Comparativa vs Banco Tradicional ⚙️
 - **Elección de frecuencia:**
@@ -80,6 +106,7 @@ El recorrido sigue las **4 etapas clave** del viaje de un cliente en MotoKaizen,
 ---
 
 ## 💡 Ventajas Técnicas del Simulador
+- **Productos reales con Odoo:** `GET /api/producto?barcode=...` consulta `product.product` vía JSON-RPC y devuelve nombre, código, precio, moneda, imagen, categoría, stock, descripción y atributos. Las credenciales permanecen en el servidor.
 - **Biometría con OpenCV:** `servidor-simulador.py` expone `GET /api/status` y `POST /api/validate-face` (Haar cascade `haarcascade_frontalface_default.xml`); el navegador envía cuadros de la cámara cada 500 ms. Cuando se detecta un rostro, ejecuta una animación breve de escaneo y habilita el avance. No compara la cara con el documento.
 - **Captura documental móvil:** la cámara trasera preferida se muestra dentro de la aplicación y la foto se envía al endpoint OCR antes de habilitar el paso facial. Para usarla desde un celular en la red local, sirve el proyecto mediante HTTPS; `http://IP:5000` no permite cámara embebida por las políticas del navegador.
 - **Resultado documental:** el botón `Continuar al reconocimiento facial` solo aparece después de que el servidor responde con un documento válido. Si OCR falla, se muestra el motivo, se permite repetir el escaneo y no se habilita el avance.

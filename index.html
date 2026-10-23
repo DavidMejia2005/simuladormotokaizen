@@ -12,6 +12,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 .document-camera.is-fullscreen #btnContinueDocument {
   order: 4;
 }
@@ -259,6 +263,7 @@ main {
   color: var(--brand-navy);
   letter-spacing: -0.02em;
   margin-bottom: 0.6rem;
+  overflow-wrap: break-word;
 }
 
 .section-desc {
@@ -283,6 +288,17 @@ main {
   border: none;
   transition: all 0.2s ease;
   text-decoration: none;
+}
+
+.btn-bank:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-bank-primary:disabled:hover {
+  background: var(--brand-orange);
+  box-shadow: none;
 }
 
 .btn-bank-primary {
@@ -809,14 +825,34 @@ main {
   display: none;
 }
 
-.barcode-status[data-state="fallback"] {
-  border-color: #fde68a;
-  border-left-color: #d97706;
-  background: #fffbeb;
+.barcode-status[data-state="loading"] {
+  border-color: #bfdbfe;
+  border-left-color: #2563eb;
+  background: #eff6ff;
 }
 
-.barcode-status[data-state="fallback"] .barcode-status-icon {
-  background: #d97706;
+.barcode-status[data-state="error"] {
+  border-color: #fecaca;
+  border-left-color: #dc2626;
+  background: #fef2f2;
+}
+
+.barcode-status[data-state="demo"] {
+  border-color: #cbd5e1;
+  border-left-color: #64748b;
+  background: #f8fafc;
+}
+
+.barcode-status[data-state="loading"] .barcode-status-icon {
+  background: #2563eb;
+}
+
+.barcode-status[data-state="error"] .barcode-status-icon {
+  background: #dc2626;
+}
+
+.barcode-status[data-state="demo"] .barcode-status-icon {
+  background: #64748b;
 }
 
 .barcode-status-icon {
@@ -878,6 +914,23 @@ main {
   color: var(--brand-navy);
   overflow-wrap: anywhere;
   text-align: right;
+}
+
+.product-description {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.55;
+  white-space: pre-line;
+}
+
+.product-odoo-meta {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.product-odoo-meta strong {
+  color: var(--brand-navy);
 }
 
 .product-hero {
@@ -2309,8 +2362,8 @@ main {
   <section id="screen-1" class="screen-view active">
     <div class="section-banner">
       <div class="section-tag">Paso 1 de 4 · Producto Escaneado</div>
-      <h1 class="section-title">Este es el producto que fotografiaste</h1>
-      <p class="section-desc">Simulamos la experiencia de escanear el código QR de la motocicleta en una tienda aliada de MotoKaizen para revisar su información y opciones de pago.</p>
+      <h1 class="section-title">Este es el producto que escaneaste</h1>
+      <p class="section-desc">Consultamos la ficha real del producto en Odoo a partir del código del QR para revisar su información y opciones de pago.</p>
     </div>
 
     <div class="qr-scan-chip">
@@ -2333,7 +2386,7 @@ main {
     <div class="product-hero">
       <!-- Ficha del producto -->
       <div class="product-media">
-        <div class="product-media-flag">📷 Foto tomada por el cliente</div>
+        <div class="product-media-flag" id="landBikeImageFlag">📷 Imagen del producto</div>
         <img id="landBikeImg" src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=900&q=80" alt="Motocicleta escaneada">
       </div>
 
@@ -2354,6 +2407,9 @@ main {
           <strong id="landBikeCode">—</strong>
         </div>
 
+        <p class="product-description" id="landBikeDescription" hidden></p>
+        <div class="product-odoo-meta" id="landBikeMeta" hidden></div>
+
         <div>
           <div class="product-price-row">
             <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Valor Total Comercial</span>
@@ -2362,7 +2418,7 @@ main {
           <p class="product-cuota-teaser" id="landCuotaTeaser">Cuota desde $0 cada 15 días · Sin inicial · 0% de interés</p>
         </div>
 
-        <button class="btn-bank btn-bank-outline" onclick="openProductPicker()" style="width: 100%;">🛍️ Elegir otro producto de la tienda</button>
+        <button class="btn-bank btn-bank-outline" id="btnOtherProducts" onclick="openProductPicker()" style="width: 100%;">🛍️ Elegir otro producto de la tienda</button>
       </div>
     </div>
 
@@ -2398,7 +2454,7 @@ main {
 
     <!-- Acción principal -->
     <div class="product-cta-row">
-      <button class="btn-bank btn-bank-primary btn-bank-lg" onclick="acceptConvenio()">Sí, quiero pagar con el Plan de Moto Kaizen →</button>
+      <button class="btn-bank btn-bank-primary btn-bank-lg" id="btnAcceptConvenio" onclick="acceptConvenio()">Sí, quiero pagar con el Plan de Moto Kaizen →</button>
     </div>
   </section>
 
@@ -2694,8 +2750,8 @@ main {
 const MOTOS_DATA = [
   {
     id: 1,
-    barcode: 'SEL-42171082014822',
-    default_code: 'MOTO-NMAX-155',
+    barcode: 'DEMO-NMAX-155',
+    default_code: 'DEMO-NMAX-155',
     marca: 'YAMAHA',
     modelo: 'NMAX Connected 155',
     badge: 'Líder en Ventas',
@@ -2707,8 +2763,8 @@ const MOTOS_DATA = [
   },
   {
     id: 2,
-    barcode: 'SEL-42171082014823',
-    default_code: 'MOTO-PULSAR-NS200',
+    barcode: 'DEMO-PULSAR-NS200',
+    default_code: 'DEMO-PULSAR-NS200',
     marca: 'BAJAJ',
     modelo: 'Pulsar NS200 FI ABS',
     badge: 'Deportiva Urbana',
@@ -2720,8 +2776,8 @@ const MOTOS_DATA = [
   },
   {
     id: 3,
-    barcode: 'SEL-42171082014824',
-    default_code: 'MOTO-GIXXER-150',
+    barcode: 'DEMO-GIXXER-150',
+    default_code: 'DEMO-GIXXER-150',
     marca: 'SUZUKI',
     modelo: 'Gixxer 150 FI',
     badge: 'Alta Eficiencia',
@@ -2733,8 +2789,8 @@ const MOTOS_DATA = [
   },
   {
     id: 4,
-    barcode: 'SEL-42171082014825',
-    default_code: 'MOTO-DUKE-200',
+    barcode: 'DEMO-DUKE-200',
+    default_code: 'DEMO-DUKE-200',
     marca: 'KTM',
     modelo: 'Duke 200 NG',
     badge: 'Gama Deportiva',
@@ -2746,8 +2802,8 @@ const MOTOS_DATA = [
   },
   {
     id: 5,
-    barcode: 'SEL-42171082014826',
-    default_code: 'MOTO-CB125F',
+    barcode: 'DEMO-CB125F',
+    default_code: 'DEMO-CB125F',
     marca: 'HONDA',
     modelo: 'CB 125F Twister',
     badge: 'Trabajo y Ciudad',
@@ -2759,8 +2815,8 @@ const MOTOS_DATA = [
   },
   {
     id: 6,
-    barcode: 'SEL-42171082014827',
-    default_code: 'MOTO-MT03-ABS',
+    barcode: 'DEMO-MT03-ABS',
+    default_code: 'DEMO-MT03-ABS',
     marca: 'YAMAHA',
     modelo: 'MT-03 ABS',
     badge: 'Alta Gama',
@@ -2812,7 +2868,10 @@ let AppState = {
   frequency: 'QUINCENAL',      // 'QUINCENAL' o 'MENSUAL'
   paymentMethod: 'MK',         // 'MK' (Convenio MotoKaizen) o 'CONTADO'
   scannedBarcode: '',
-  barcodeResolution: null,     // 'catalog' | 'fallback' | null
+  barcodeResolution: null,     // 'odoo' | 'loading' | 'error' | null
+  productStatus: 'ready',      // 'ready' | 'loading' | 'error'
+  productError: '',
+  odooProduct: null,
   cuotaExacta: 0,
   ahorroEstimado: 0,
   biometricVerified: false,
@@ -2843,6 +2902,40 @@ const formatCOP = (num) => new Intl.NumberFormat('es-CO', {
   currency: 'COP',
   maximumFractionDigits: 0
 }).format(num);
+
+const formatMoney = (num, currency = 'COP') => {
+  if (num === null || num === undefined || num === '' || num === false) return '—';
+  const numeric = Number(num);
+  if (!Number.isFinite(numeric)) return '—';
+  try {
+    return new Intl.NumberFormat('es-CO', {
+      style: 'currency',
+      currency: currency || 'COP',
+      maximumFractionDigits: 0
+    }).format(numeric);
+  } catch (error) {
+    return formatCOP(numeric);
+  }
+};
+
+const formatBikePrice = (bike) => bike ? formatMoney(bike.precio, bike.currency || 'COP') : '—';
+
+const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, char => ({
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;'
+})[char]);
+
+const PRODUCT_IMAGE_PLACEHOLDER = 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="900" height="600" viewBox="0 0 900 600">' +
+  '<rect width="900" height="600" fill="#f1f5f9"/>' +
+  '<circle cx="450" cy="255" r="58" fill="#e2e8f0"/>' +
+  '<path d="M415 270h70M430 245l20-18 20 18M450 290v-40" stroke="#94a3b8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>' +
+  '<text x="450" y="355" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="26" font-weight="700" fill="#64748b">Sin imagen en Odoo</text>' +
+  '</svg>'
+);
 
 const isDocumentApproved = () => Boolean(AppState.docCheck?.valid);
 const isFaceApproved = () => Boolean(AppState.biometricVerified);
@@ -2890,10 +2983,11 @@ function showLoadingScreen(config, callback) {
 
 /* ─── NAVEGACIÓN DE PANTALLAS ─────────────────────────────── */
 function getScreenAccessState() {
+  const hasReadyProduct = Boolean(AppState.selectedBike) && AppState.productStatus === 'ready';
   return {
     screen1: true,
-    screen2: Boolean(AppState.selectedBike) && AppState.paymentMethod === 'MK',
-    screen3: Boolean(AppState.selectedBike) && AppState.paymentMethod === 'MK',
+    screen2: hasReadyProduct && AppState.paymentMethod === 'MK',
+    screen3: hasReadyProduct && AppState.paymentMethod === 'MK',
     screen4: AppState.personalDataValid && isDocumentApproved() && isFaceApproved() && !!document.getElementById('inputConsent')?.checked
   };
 }
@@ -3045,44 +3139,12 @@ function advanceValidationStage() {
   handleFormSubmit({ preventDefault() {} });
 }
 
-/* ─── PRODUCTO DETECTADO DESDE EL CÓDIGO QR (URL) ─────────── */
-const normalizeProductCode = (value) => String(value ?? '').trim().toUpperCase();
-const compactProductCode = (value) => normalizeProductCode(value).replace(/[^A-Z0-9]/g, '');
+/* ─── PRODUCTO REAL DESDE ODOO (PARÁMETRO QR) ─────────────── */
+let barcodeRequestToken = 0;
 
 function getProductDisplayCode(bike) {
   if (!bike) return '—';
   return bike.barcode || bike.default_code || bike.defaultCode || `MOTO-${bike.id}`;
-}
-
-function getCodeVariants(value) {
-  const normalized = normalizeProductCode(value);
-  const compact = compactProductCode(value);
-  const variants = new Set();
-
-  if (normalized) variants.add(normalized);
-  if (compact) {
-    variants.add(compact);
-    // Odoo puede enviar el mismo código con el prefijo SEL- o solo su parte numérica.
-    const withoutSelPrefix = compact.replace(/^SEL/, '');
-    if (withoutSelPrefix) variants.add(withoutSelPrefix);
-  }
-
-  return [...variants];
-}
-
-function findCatalogProductByCode(rawCode) {
-  const inputVariants = getCodeVariants(rawCode);
-  if (inputVariants.length === 0) return null;
-
-  return MOTOS_DATA.find(bike => {
-    const codes = [bike.barcode, bike.default_code, bike.defaultCode, bike.code, bike.id]
-      .filter(value => value !== undefined && value !== null && String(value).trim() !== '');
-
-    return codes.some(value => {
-      const productVariants = getCodeVariants(value);
-      return productVariants.some(variant => inputVariants.includes(variant));
-    });
-  }) || null;
 }
 
 function showBarcodeStatus(state, title, text) {
@@ -3090,76 +3152,247 @@ function showBarcodeStatus(state, title, text) {
   if (!box) return;
   box.hidden = false;
   box.dataset.state = state;
-  $('barcodeStatusIcon').textContent = state === 'catalog' ? '✓' : '!';
+  const icons = { catalog: '✓', loading: '…', error: '!', demo: 'i' };
+  $('barcodeStatusIcon').textContent = icons[state] || '!';
   $('barcodeStatusTitle').textContent = title;
   $('barcodeStatusText').textContent = text;
 }
 
-function hideBarcodeStatus() {
-  const box = $('barcodeStatus');
-  if (box) box.hidden = true;
+function setAcceptConvenioEnabled(enabled) {
+  const button = $('btnAcceptConvenio');
+  if (button) button.disabled = !enabled;
 }
 
-function applyBarcodeFromUrl() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const productBarcode = (urlParams.get('barcode') || '').trim();
+function mapOdooProductToBike(product) {
+  const specs = Array.isArray(product.specs) ? product.specs : [];
+  const normalizeText = (value) => String(value ?? '')
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
 
-  AppState.scannedBarcode = productBarcode;
-  AppState.barcodeResolution = null;
+  const findSpec = (keywords) => {
+    const spec = specs.find(item => {
+      const label = normalizeText(item.label);
+      return keywords.some(keyword => label.includes(keyword));
+    });
+    return spec ? String(spec.value || '') : '';
+  };
 
-  if (!productBarcode) {
-    hideBarcodeStatus();
-    return;
+  const numericPrice = product.price === null || product.price === undefined || product.price === false
+    ? null
+    : Number(product.price);
+  const numericStock = product.qty_available === null || product.qty_available === undefined
+    ? null
+    : Number(product.qty_available);
+
+  return {
+    id: product.odoo_id || product.id,
+    odoo_id: product.odoo_id || product.id,
+    barcode: product.barcode || AppState.scannedBarcode,
+    default_code: product.default_code || '',
+    marca: (product.brand || 'ODOO').toUpperCase(),
+    modelo: product.display_name || product.name || 'Producto Odoo',
+    badge: product.category || 'Producto Odoo',
+    cc: findSpec(['cilindraje', 'cilindrada', 'cc']),
+    hp: findSpec(['potencia', 'hp']),
+    km: findSpec(['rendimiento', 'km/gal', 'kilometros']),
+    specs,
+    precio: Number.isFinite(numericPrice) ? numericPrice : null,
+    currency: product.currency || 'COP',
+    img: product.image || PRODUCT_IMAGE_PLACEHOLDER,
+    category: product.category || '',
+    uom: product.uom || '',
+    stock: Number.isFinite(numericStock) ? numericStock : null,
+    description: product.description || '',
+    odoo_url: product.odoo_url || '',
+    source: 'odoo',
+    isOdoo: true
+  };
+}
+
+function buildProductSpecsHtml(bike) {
+  if (Array.isArray(bike.specs) && bike.specs.length) {
+    return bike.specs.slice(0, 8).map(spec => (
+      `<span class="product-spec-chip"><strong>${escapeHtml(spec.label)}:</strong> ${escapeHtml(spec.value)}</span>`
+    )).join('');
   }
 
-  const catalogProduct = findCatalogProductByCode(productBarcode);
+  const chips = [];
+  if (bike.cc) chips.push(`<span class="product-spec-chip">${escapeHtml(bike.cc)}</span>`);
+  if (bike.hp) chips.push(`<span class="product-spec-chip">${escapeHtml(bike.hp)}</span>`);
+  if (bike.km) chips.push(`<span class="product-spec-chip">${escapeHtml(bike.km)}</span>`);
+  if (!chips.length && bike.category) chips.push(`<span class="product-spec-chip">Categoría: ${escapeHtml(bike.category)}</span>`);
+  if (!chips.length && bike.uom) chips.push(`<span class="product-spec-chip">Unidad: ${escapeHtml(bike.uom)}</span>`);
+  return chips.join('');
+}
 
-  if (catalogProduct) {
-    AppState.selectedBike = catalogProduct;
-    AppState.barcodeResolution = 'catalog';
+function renderProductPlaceholder() {
+  const isLoading = AppState.productStatus === 'loading';
+  $('landBikeImg').src = PRODUCT_IMAGE_PLACEHOLDER;
+  $('landBikeImg').alt = isLoading ? 'Consultando producto en Odoo' : 'Producto no disponible en Odoo';
+  $('landBikeImageFlag').textContent = isLoading ? '⏳ Consultando imagen en Odoo' : '📷 Imagen no disponible en Odoo';
+  $('landBikeBrand').textContent = 'ODOO';
+  $('landBikeModel').textContent = isLoading ? 'Consultando producto...' : 'Producto no disponible';
+  $('landBikeSpecs').innerHTML = `<span class="product-spec-chip">${isLoading ? 'Consultando ficha en Odoo...' : 'Sin datos reales de Odoo'}</span>`;
+  $('landBikeCode').textContent = AppState.scannedBarcode || '—';
+  $('landBikePrice').textContent = '—';
+  $('landCuotaTeaser').textContent = isLoading
+    ? 'Consultando precio real en Odoo...'
+    : 'No se pudo obtener el precio real desde Odoo.';
+  $('payMethodMKPrice').innerHTML = `Plan quincenal o mensual · <span>${isLoading ? 'Consultando precio en Odoo' : 'Precio no disponible'}</span>`;
+  $('payMethodContadoPrice').textContent = '—';
+  $('landBikeDescription').hidden = true;
+  $('landBikeDescription').textContent = '';
+  $('landBikeMeta').hidden = true;
+  $('landBikeMeta').textContent = '';
+  $('btnOtherProducts').hidden = true;
+  setAcceptConvenioEnabled(false);
+}
+
+async function applyBarcodeFromUrl() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const productBarcode = (urlParams.get('barcode') || '').trim();
+  const requestToken = ++barcodeRequestToken;
+
+  AppState.scannedBarcode = productBarcode;
+
+  if (!productBarcode) {
+    AppState.barcodeResolution = null;
+    AppState.productStatus = 'ready';
+    AppState.productError = '';
+    AppState.odooProduct = null;
     showBarcodeStatus(
-      'catalog',
-      `Producto detectado: ${catalogProduct.marca} ${catalogProduct.modelo}`,
-      `Código ${productBarcode} reconocido correctamente en el catálogo. Precio a financiar: ${formatCOP(catalogProduct.precio)}.`
+      'demo',
+      'Modo demostración sin código QR',
+      'Este enlace no incluye el parámetro barcode. Abre el QR de Odoo (/?barcode=...) para consultar un producto real. El catálogo que ves ahora es solo de demostración.'
     );
     return;
   }
 
-  // Fallback local: Vercel no expone una API de productos, así que mantenemos
-  // el código escaneado visible y usamos una ficha de referencia del catálogo.
-  const referenceBike = AppState.selectedBike || MOTOS_DATA[0];
-  AppState.selectedBike = {
-    ...referenceBike,
-    barcode: productBarcode,
-    default_code: productBarcode
-  };
-  AppState.barcodeResolution = 'fallback';
+  AppState.barcodeResolution = 'loading';
+  AppState.productStatus = 'loading';
+  AppState.productError = '';
+  AppState.odooProduct = null;
+  AppState.selectedBike = null;
   showBarcodeStatus(
-    'fallback',
-    `Código ${productBarcode} detectado correctamente`,
-    `No encontramos este código en el catálogo local y la API de productos no está disponible en este despliegue. Mostramos la ficha de referencia ${referenceBike.marca} ${referenceBike.modelo} (${formatCOP(referenceBike.precio)}) para que puedas continuar la simulación.`
+    'loading',
+    `Consultando el producto ${productBarcode} en Odoo...`,
+    'Obteniendo nombre, imagen y precio reales. No se muestran productos de demostración ni referencias.'
   );
+  renderProductLanding();
+
+  if (window.location.protocol === 'file:') {
+    const message = 'Abre el simulador con servidor-local.bat o desde Vercel para consultar Odoo. La apertura como archivo (file://) no permite llamar a la API.';
+    AppState.productStatus = 'error';
+    AppState.productError = message;
+    AppState.barcodeResolution = 'error';
+    showBarcodeStatus('error', `No se pudo consultar ${productBarcode} en Odoo`, message);
+    renderProductLanding();
+    return;
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+  try {
+    const response = await fetch(`/api/producto?barcode=${encodeURIComponent(productBarcode)}`, {
+      headers: { Accept: 'application/json' },
+      cache: 'no-store',
+      signal: controller.signal
+    });
+
+    let payload = {};
+    try {
+      payload = await response.json();
+    } catch (error) {
+      payload = {};
+    }
+
+    if (!response.ok || !payload.ok || !payload.product) {
+      const parts = [payload.error || 'Odoo no devolvió el producto solicitado.'];
+      if (payload.hint) parts.push(payload.hint);
+      throw new Error(parts.join(' '));
+    }
+
+    const product = payload.product;
+    if (requestToken !== barcodeRequestToken) return;
+    AppState.odooProduct = product;
+    AppState.selectedBike = mapOdooProductToBike(product);
+    AppState.productStatus = 'ready';
+    AppState.productError = '';
+    AppState.barcodeResolution = 'odoo';
+
+    const priceLabel = formatMoney(product.price, product.currency);
+    showBarcodeStatus(
+      'catalog',
+      `Producto Odoo: ${product.display_name || product.name}`,
+      `Código ${product.barcode || productBarcode} · ${priceLabel} · Ficha e imagen obtenidas desde Odoo.`
+    );
+
+    calculateFinancials();
+    renderProductLanding();
+    if (AppState.currentScreen === 2) updateScreen2Plan();
+  } catch (error) {
+    if (requestToken !== barcodeRequestToken) return;
+    const message = error.name === 'AbortError'
+      ? 'Odoo tardó demasiado en responder. Verifica la conexión e inténtalo de nuevo.'
+      : (error.message || 'No se pudo consultar Odoo.');
+    AppState.productStatus = 'error';
+    AppState.productError = message;
+    AppState.barcodeResolution = 'error';
+    AppState.selectedBike = null;
+    showBarcodeStatus('error', `No se pudo cargar el producto ${productBarcode} desde Odoo`, message);
+    renderProductLanding();
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 /* ─── PANTALLA 1: PRODUCTO ESCANEADO (QR) ─────────────────── */
 function renderProductLanding() {
   const bike = AppState.selectedBike;
-  if (!bike) return;
+  $('btnOtherProducts').hidden = Boolean(AppState.scannedBarcode);
 
-  $('landBikeImg').src = bike.img;
-  $('landBikeBrand').textContent = bike.marca;
-  $('landBikeModel').textContent = bike.modelo;
-  $('landBikeSpecs').innerHTML = `
-    <span class="product-spec-chip">${bike.cc}</span>
-    <span class="product-spec-chip">${bike.hp}</span>
-    <span class="product-spec-chip">${bike.km}</span>`;
+  if (!bike || AppState.productStatus !== 'ready') {
+    renderProductPlaceholder();
+    return;
+  }
+
+  $('landBikeImg').src = bike.img || PRODUCT_IMAGE_PLACEHOLDER;
+  $('landBikeImg').alt = bike.modelo || 'Producto escaneado';
+  $('landBikeImageFlag').textContent = bike.isOdoo ? '📷 Imagen del producto en Odoo' : '📷 Imagen del producto';
+  $('landBikeBrand').textContent = bike.marca || 'ODOO';
+  $('landBikeModel').textContent = bike.modelo || 'Producto';
+  $('landBikeSpecs').innerHTML = buildProductSpecsHtml(bike);
   $('landBikeCode').textContent = getProductDisplayCode(bike);
-  $('landBikePrice').textContent = formatCOP(bike.precio);
+  $('landBikePrice').textContent = formatBikePrice(bike);
 
-  const cuota = Math.round(bike.precio / 30);
-  $('landCuotaTeaser').textContent = `Cuota desde ${formatCOP(cuota)} cada 15 o 30 días · Sin inicial · 0% de interés`;
-  $('payMethodMKPrice').innerHTML = `Plan quincenal o mensual · <span>0% de interés usurero</span> · 30 cuotas de ${formatCOP(cuota)}`;
-  $('payMethodContadoPrice').textContent = formatCOP(bike.precio);
+  const numericPrice = Number(bike.precio);
+  const hasPrice = Number.isFinite(numericPrice) && numericPrice > 0;
+  const cuota = hasPrice ? Math.round(numericPrice / 30) : 0;
+
+  $('landCuotaTeaser').textContent = hasPrice
+    ? `Cuota desde ${formatMoney(cuota, bike.currency)} cada 15 o 30 días · Sin inicial · 0% de interés`
+    : 'Precio no configurado en Odoo.';
+  $('payMethodMKPrice').innerHTML = hasPrice
+    ? `Plan quincenal o mensual · <span>0% de interés usurero</span> · 30 cuotas de ${formatMoney(cuota, bike.currency)}`
+    : 'Plan quincenal o mensual · <span>Precio pendiente de configurar en Odoo</span>';
+  $('payMethodContadoPrice').textContent = hasPrice ? formatBikePrice(bike) : '—';
+
+  const description = (bike.description || '').trim();
+  $('landBikeDescription').textContent = description;
+  $('landBikeDescription').hidden = !description;
+
+  const meta = [];
+  if (bike.category) meta.push(`Categoría: ${bike.category}`);
+  if (bike.uom) meta.push(`Unidad: ${bike.uom}`);
+  if (bike.stock !== null && bike.stock !== undefined) {
+    meta.push(`Disponible en Odoo: ${new Intl.NumberFormat('es-CO', { maximumFractionDigits: 2 }).format(bike.stock)}`);
+  }
+  $('landBikeMeta').textContent = meta.join(' · ');
+  $('landBikeMeta').hidden = meta.length === 0;
+
+  setAcceptConvenioEnabled(hasPrice);
 }
 
 function openProductPicker() {
@@ -3184,8 +3417,20 @@ function acceptConvenio() {
     selectPaymentMethod('MK');
     return;
   }
+
   const bike = AppState.selectedBike;
-  const cuota = Math.round(bike.precio / 30);
+  if (!bike || AppState.productStatus !== 'ready') {
+    alert(AppState.productError || 'El producto real aún no está disponible desde Odoo. Espera la consulta o corrige la configuración.');
+    return;
+  }
+
+  const price = Number(bike.precio);
+  if (!Number.isFinite(price) || price <= 0) {
+    alert('El producto no tiene un precio configurado en Odoo. No es posible calcular la cuota.');
+    return;
+  }
+
+  const cuota = Math.round(price / 30);
   showLoadingScreen({
     title: 'Activando convenio de financiamiento...',
     subtitle: `Verificando el convenio MotoKaizen vigente con la tienda para la ${bike.marca} ${bike.modelo}.`,
@@ -3193,7 +3438,7 @@ function acceptConvenio() {
     steps: [
       `Confirmando convenio activo con la tienda aliada`,
       `Consultando grupos de autofinanciamiento para ${bike.marca}`,
-      `Calculando tu cuota fija de ${formatCOP(cuota)} (30 pagos)`
+      `Calculando tu cuota fija de ${formatMoney(cuota, bike.currency)} (30 pagos)`
     ]
   }, () => {
     goToScreen(2);
@@ -3218,7 +3463,6 @@ function renderBikesCatalog(mode) {
 
     card.onclick = () => {
       AppState.selectedBike = bike;
-      hideBarcodeStatus();
       calculateFinancials();
       renderProductLanding();
       renderBikesCatalog('picker');
@@ -3263,8 +3507,17 @@ function renderBikesCatalog(mode) {
 
 /* ─── CÁLCULO FINANCIERO (30 CUOTAS PURAS DIRECTAS) ────────── */
 function calculateFinancials() {
-  if (!AppState.selectedBike) return;
-  const precio = AppState.selectedBike.precio;
+  if (!AppState.selectedBike) {
+    AppState.cuotaExacta = 0;
+    AppState.ahorroEstimado = 0;
+    return;
+  }
+  const precio = Number(AppState.selectedBike.precio);
+  if (!Number.isFinite(precio) || precio <= 0) {
+    AppState.cuotaExacta = 0;
+    AppState.ahorroEstimado = 0;
+    return;
+  }
 
   // Lógica de negocio MotoKaizen: 30 cuotas fijas directas
   AppState.cuotaExacta = Math.round(precio / 30);
@@ -3280,15 +3533,19 @@ function setFrequency(freq) {
 }
 
 function updateScreen2Plan() {
-  if (!AppState.selectedBike) return;
+  if (!AppState.selectedBike || AppState.productStatus !== 'ready') return;
   const bike = AppState.selectedBike;
 
-  $('previewBikeImg').src = bike.img;
-  $('previewBikeBrand').textContent = bike.marca;
-  $('previewBikeModel').textContent = bike.modelo;
-  $('previewBikeSpecs').textContent = `${bike.cc} · ${bike.hp} · ${bike.km}`;
+  const specsText = Array.isArray(bike.specs) && bike.specs.length
+    ? bike.specs.map(spec => `${spec.label}: ${spec.value}`).join(' · ')
+    : [bike.cc, bike.hp, bike.km].filter(Boolean).join(' · ');
+
+  $('previewBikeImg').src = bike.img || PRODUCT_IMAGE_PLACEHOLDER;
+  $('previewBikeBrand').textContent = bike.marca || 'ODOO';
+  $('previewBikeModel').textContent = bike.modelo || 'Producto';
+  $('previewBikeSpecs').textContent = specsText || (bike.category ? `Categoría: ${bike.category}` : 'Ficha de Odoo');
   $('previewBikeCode').textContent = getProductDisplayCode(bike);
-  $('previewBikePrice').textContent = formatCOP(bike.precio);
+  $('previewBikePrice').textContent = formatBikePrice(bike);
 
   calculateFinancials();
 
@@ -3297,8 +3554,8 @@ function updateScreen2Plan() {
     : 'Tu Cuota Fija Mensual (Cada 30 días)';
 
   $('labelCuotaType').textContent = freqLabel;
-  $('displayCuotaValue').textContent = formatCOP(AppState.cuotaExacta);
-  $('displayAhorroValue').textContent = `¡Te ahorras ${formatCOP(AppState.ahorroEstimado)} COP en intereses!`;
+  $('displayCuotaValue').textContent = formatMoney(AppState.cuotaExacta, bike.currency);
+  $('displayAhorroValue').textContent = `¡Te ahorras ${formatMoney(AppState.ahorroEstimado, bike.currency)} en intereses!`;
 }
 
 /* ─── PANTALLA 3: FORMULARIO DE VALIDACIÓN ────────────────── */
@@ -4007,7 +4264,9 @@ function updateScreen4Group() {
   $('displayGroupMoto').textContent = AppState.selectedBike.modelo;
   $('displayGroupCupo').textContent = `Cupo #${AppState.group.meCupo}`;
   $('kpiGroupCode').textContent = AppState.group.code;
-  $('kpiGroupFondo').textContent = formatCOP(AppState.selectedBike.precio);
+  $('kpiGroupFondo').textContent = AppState.selectedBike
+    ? formatBikePrice(AppState.selectedBike)
+    : '—';
 
   $('emailNoticeAddress').textContent = AppState.client.email;
   $('emailNoticeBody').textContent = `Adjuntamos el detalle del grupo ${AppState.group.code} y tu cupo #${AppState.group.meCupo} en el consorcio MotoKaizen. En un entorno productivo, un asesor se contactará contigo para coordinar la entrega de tu vehículo.`;
@@ -4072,7 +4331,13 @@ function resetSimulation() {
 
   buildGroupMembers();
   renderBikesCatalog('picker');
-  renderProductLanding();
+  if (AppState.scannedBarcode) {
+    applyBarcodeFromUrl();
+  } else {
+    AppState.productStatus = 'ready';
+    AppState.productError = '';
+    renderProductLanding();
+  }
   goToScreen(1);
 }
 
@@ -4097,7 +4362,11 @@ function attachFormValidationListeners() {
 }
 
 /* ─── INICIALIZACIÓN ──────────────────────────────────────── */
+let simulatorInitialized = false;
+
 function initSimulator() {
+  if (simulatorInitialized) return;
+  simulatorInitialized = true;
   applyBarcodeFromUrl();
   buildGroupMembers();
   renderBikesCatalog('picker');
