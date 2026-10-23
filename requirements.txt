@@ -3,3 +3,4 @@ numpy
 opencv-python
 pytesseract
 cryptography
+requests>=2.31,<3

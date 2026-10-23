@@ -51,6 +51,14 @@ El endpoint interno de consulta es:
 GET /api/producto?barcode=ESC-42865619468495
 ```
 
+La consulta usa JSON-RPC HTTP puro con `requests` contra `{ODOO_URL}/jsonrpc`. Si el código no existe, responde `404` con:
+
+```json
+{"error": "Producto no encontrado en Odoo", "barcode": "ESC-42865619468495"}
+```
+
+Los errores de conexión, autenticación y consulta se imprimen con el prefijo `[ODOO]` en los logs de Vercel.
+
 ### Opción 2: Con cámara real (Python + OpenCV) — Recomendada para la demo
 1. Asegúrate de tener **Python 3** instalado y ejecuta `python -m pip install -r requirements.txt`. Copia `.env.example` como `.env` y reemplaza `sk-proj-reemplazar` por tu clave real. El servidor carga `.env` automáticamente; la clave solo se usa en el backend y no se envía al navegador.
 2. Haz **doble clic** en **`servidor-local.bat`**.

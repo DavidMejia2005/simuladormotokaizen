@@ -452,60 +452,61 @@ def _status_payload():
 def _product_response(barcode):
     """Respuesta de /api/producto?barcode=... Devuelve (payload, código HTTP)."""
     barcode = (barcode or "").strip()
+    print("[PRODUCTO] Consultando barcode=%r" % barcode, flush=True)
+
     if not barcode:
-        return {
-            "ok": False,
-            "found": False,
-            "error": "Falta el parámetro barcode.",
-        }, 400
+        print("[PRODUCTO] Falta el parámetro barcode.", flush=True)
+        return {"error": "Falta el parámetro barcode."}, 400
     if len(barcode) > 128:
+        print("[PRODUCTO] Barcode demasiado largo: %r" % barcode, flush=True)
         return {
-            "ok": False,
-            "found": False,
-            "barcode": barcode,
             "error": "El código de barras es demasiado largo.",
+            "barcode": barcode,
         }, 400
 
     try:
         product = get_product_by_barcode(barcode)
     except OdooNotConfigured as exc:
+        print("[PRODUCTO] Odoo sin configurar: %s" % exc, flush=True)
         return {
-            "ok": False,
-            "found": False,
+            "error": str(exc),
+            "barcode": barcode,
             "configured": False,
-            "status": "not_configured",
-            "barcode": barcode,
-            "error": str(exc),
-            "hint": "Configura ODOO_URL, ODOO_DB, ODOO_USERNAME y ODOO_API_KEY en Vercel o en .env.",
-        }, 200
-    except OdooProductNotFound as exc:
+        }, 503
+    except OdooProductNotFound:
+        print("[PRODUCTO] Producto no encontrado en Odoo: %r" % barcode, flush=True)
         return {
-            "ok": False,
-            "found": False,
-            "configured": True,
-            "status": "not_found",
+            "error": "Producto no encontrado en Odoo",
             "barcode": barcode,
-            "error": str(exc),
-        }, 200
+        }, 404
     except OdooRequestError as exc:
+        print("[PRODUCTO] Error de Odoo para %r: %s" % (barcode, exc), flush=True)
         return {
-            "ok": False,
-            "found": False,
-            "configured": True,
-            "status": "odoo_error",
-            "barcode": barcode,
             "error": str(exc),
-        }, 200
+            "barcode": barcode,
+        }, 502
     except OdooError as exc:
+        print("[PRODUCTO] Error controlado para %r: %s" % (barcode, exc), flush=True)
         return {
-            "ok": False,
-            "found": False,
-            "configured": True,
-            "status": "odoo_error",
-            "barcode": barcode,
             "error": str(exc),
-        }, 200
+            "barcode": barcode,
+        }, 502
+    except Exception as exc:  # noqa: BLE001
+        print(
+            "[PRODUCTO] Error inesperado para %r: %s: %s"
+            % (barcode, type(exc).__name__, exc),
+            flush=True,
+        )
+        return {
+            "error": "Error interno al consultar el producto en Odoo.",
+            "barcode": barcode,
+        }, 500
 
+    print(
+        "[PRODUCTO] OK barcode=%r producto=%r"
+        % (barcode, product.get("display_name")),
+        flush=True,
+    )
     return {
         "ok": True,
         "found": True,
