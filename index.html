@@ -791,6 +791,95 @@ main {
   margin-bottom: 1rem;
 }
 
+/* ─── ESTADO DE PRODUCTO DETECTADO POR CÓDIGO DE BARRAS ───── */
+.barcode-status {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 1rem 1.15rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid #a7f3d0;
+  border-left: 4px solid var(--brand-green);
+  border-radius: var(--radius-lg);
+  background: var(--brand-green-subtle);
+  box-shadow: var(--shadow-sm);
+}
+
+.barcode-status[hidden] {
+  display: none;
+}
+
+.barcode-status[data-state="fallback"] {
+  border-color: #fde68a;
+  border-left-color: #d97706;
+  background: #fffbeb;
+}
+
+.barcode-status[data-state="fallback"] .barcode-status-icon {
+  background: #d97706;
+}
+
+.barcode-status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--brand-green);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 900;
+}
+
+.barcode-status-copy {
+  min-width: 0;
+}
+
+.barcode-status-copy strong {
+  display: block;
+  color: var(--brand-navy);
+  font-size: 0.92rem;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.barcode-status-copy p {
+  margin: 0.2rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.product-code-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px dashed var(--border-medium);
+  border-radius: var(--radius-md);
+  background: var(--bg-subtle);
+}
+
+.product-code-row span {
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.product-code-row strong {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--brand-navy);
+  overflow-wrap: anywhere;
+  text-align: right;
+}
+
 .product-hero {
   display: grid;
   grid-template-columns: 1.05fr 1fr;
@@ -2233,6 +2322,14 @@ main {
       Código QR leído · Convenio activo con esta tienda
     </div>
 
+    <div class="barcode-status" id="barcodeStatus" role="status" aria-live="polite" hidden>
+      <div class="barcode-status-icon" id="barcodeStatusIcon" aria-hidden="true">✓</div>
+      <div class="barcode-status-copy">
+        <strong id="barcodeStatusTitle"></strong>
+        <p id="barcodeStatusText"></p>
+      </div>
+    </div>
+
     <div class="product-hero">
       <!-- Ficha del producto -->
       <div class="product-media">
@@ -2250,6 +2347,11 @@ main {
             <span class="product-spec-chip">15.1 HP</span>
             <span class="product-spec-chip">140 km/gal</span>
           </div>
+        </div>
+
+        <div class="product-code-row">
+          <span>ID / Código del producto</span>
+          <strong id="landBikeCode">—</strong>
         </div>
 
         <div>
@@ -2317,6 +2419,7 @@ main {
             <div class="bike-brand" id="previewBikeBrand">YAMAHA</div>
             <div class="bike-model" id="previewBikeModel" style="margin-bottom: 0.25rem;">NMAX Connected 155</div>
             <div style="font-size: 0.85rem; color: var(--text-muted);" id="previewBikeSpecs">155 cc · 15.1 HP · 140 km/gal</div>
+            <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 0.35rem;">Código: <strong id="previewBikeCode" style="color: var(--brand-navy);">—</strong></div>
           </div>
           <div style="border-top: 1px solid var(--border-light); padding-top: 1rem; display: flex; justify-content: space-between; align-items: baseline;">
             <span style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Valor Total Comercial</span>
@@ -2591,6 +2694,8 @@ main {
 const MOTOS_DATA = [
   {
     id: 1,
+    barcode: 'SEL-42171082014822',
+    default_code: 'MOTO-NMAX-155',
     marca: 'YAMAHA',
     modelo: 'NMAX Connected 155',
     badge: 'Líder en Ventas',
@@ -2602,6 +2707,8 @@ const MOTOS_DATA = [
   },
   {
     id: 2,
+    barcode: 'SEL-42171082014823',
+    default_code: 'MOTO-PULSAR-NS200',
     marca: 'BAJAJ',
     modelo: 'Pulsar NS200 FI ABS',
     badge: 'Deportiva Urbana',
@@ -2613,6 +2720,8 @@ const MOTOS_DATA = [
   },
   {
     id: 3,
+    barcode: 'SEL-42171082014824',
+    default_code: 'MOTO-GIXXER-150',
     marca: 'SUZUKI',
     modelo: 'Gixxer 150 FI',
     badge: 'Alta Eficiencia',
@@ -2624,6 +2733,8 @@ const MOTOS_DATA = [
   },
   {
     id: 4,
+    barcode: 'SEL-42171082014825',
+    default_code: 'MOTO-DUKE-200',
     marca: 'KTM',
     modelo: 'Duke 200 NG',
     badge: 'Gama Deportiva',
@@ -2635,6 +2746,8 @@ const MOTOS_DATA = [
   },
   {
     id: 5,
+    barcode: 'SEL-42171082014826',
+    default_code: 'MOTO-CB125F',
     marca: 'HONDA',
     modelo: 'CB 125F Twister',
     badge: 'Trabajo y Ciudad',
@@ -2646,6 +2759,8 @@ const MOTOS_DATA = [
   },
   {
     id: 6,
+    barcode: 'SEL-42171082014827',
+    default_code: 'MOTO-MT03-ABS',
     marca: 'YAMAHA',
     modelo: 'MT-03 ABS',
     badge: 'Alta Gama',
@@ -2696,6 +2811,8 @@ let AppState = {
   selectedBike: MOTOS_DATA[1], // Pulsar NS200 por defecto
   frequency: 'QUINCENAL',      // 'QUINCENAL' o 'MENSUAL'
   paymentMethod: 'MK',         // 'MK' (Convenio MotoKaizen) o 'CONTADO'
+  scannedBarcode: '',
+  barcodeResolution: null,     // 'catalog' | 'fallback' | null
   cuotaExacta: 0,
   ahorroEstimado: 0,
   biometricVerified: false,
@@ -2928,6 +3045,102 @@ function advanceValidationStage() {
   handleFormSubmit({ preventDefault() {} });
 }
 
+/* ─── PRODUCTO DETECTADO DESDE EL CÓDIGO QR (URL) ─────────── */
+const normalizeProductCode = (value) => String(value ?? '').trim().toUpperCase();
+const compactProductCode = (value) => normalizeProductCode(value).replace(/[^A-Z0-9]/g, '');
+
+function getProductDisplayCode(bike) {
+  if (!bike) return '—';
+  return bike.barcode || bike.default_code || bike.defaultCode || `MOTO-${bike.id}`;
+}
+
+function getCodeVariants(value) {
+  const normalized = normalizeProductCode(value);
+  const compact = compactProductCode(value);
+  const variants = new Set();
+
+  if (normalized) variants.add(normalized);
+  if (compact) {
+    variants.add(compact);
+    // Odoo puede enviar el mismo código con el prefijo SEL- o solo su parte numérica.
+    const withoutSelPrefix = compact.replace(/^SEL/, '');
+    if (withoutSelPrefix) variants.add(withoutSelPrefix);
+  }
+
+  return [...variants];
+}
+
+function findCatalogProductByCode(rawCode) {
+  const inputVariants = getCodeVariants(rawCode);
+  if (inputVariants.length === 0) return null;
+
+  return MOTOS_DATA.find(bike => {
+    const codes = [bike.barcode, bike.default_code, bike.defaultCode, bike.code, bike.id]
+      .filter(value => value !== undefined && value !== null && String(value).trim() !== '');
+
+    return codes.some(value => {
+      const productVariants = getCodeVariants(value);
+      return productVariants.some(variant => inputVariants.includes(variant));
+    });
+  }) || null;
+}
+
+function showBarcodeStatus(state, title, text) {
+  const box = $('barcodeStatus');
+  if (!box) return;
+  box.hidden = false;
+  box.dataset.state = state;
+  $('barcodeStatusIcon').textContent = state === 'catalog' ? '✓' : '!';
+  $('barcodeStatusTitle').textContent = title;
+  $('barcodeStatusText').textContent = text;
+}
+
+function hideBarcodeStatus() {
+  const box = $('barcodeStatus');
+  if (box) box.hidden = true;
+}
+
+function applyBarcodeFromUrl() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const productBarcode = (urlParams.get('barcode') || '').trim();
+
+  AppState.scannedBarcode = productBarcode;
+  AppState.barcodeResolution = null;
+
+  if (!productBarcode) {
+    hideBarcodeStatus();
+    return;
+  }
+
+  const catalogProduct = findCatalogProductByCode(productBarcode);
+
+  if (catalogProduct) {
+    AppState.selectedBike = catalogProduct;
+    AppState.barcodeResolution = 'catalog';
+    showBarcodeStatus(
+      'catalog',
+      `Producto detectado: ${catalogProduct.marca} ${catalogProduct.modelo}`,
+      `Código ${productBarcode} reconocido correctamente en el catálogo. Precio a financiar: ${formatCOP(catalogProduct.precio)}.`
+    );
+    return;
+  }
+
+  // Fallback local: Vercel no expone una API de productos, así que mantenemos
+  // el código escaneado visible y usamos una ficha de referencia del catálogo.
+  const referenceBike = AppState.selectedBike || MOTOS_DATA[0];
+  AppState.selectedBike = {
+    ...referenceBike,
+    barcode: productBarcode,
+    default_code: productBarcode
+  };
+  AppState.barcodeResolution = 'fallback';
+  showBarcodeStatus(
+    'fallback',
+    `Código ${productBarcode} detectado correctamente`,
+    `No encontramos este código en el catálogo local y la API de productos no está disponible en este despliegue. Mostramos la ficha de referencia ${referenceBike.marca} ${referenceBike.modelo} (${formatCOP(referenceBike.precio)}) para que puedas continuar la simulación.`
+  );
+}
+
 /* ─── PANTALLA 1: PRODUCTO ESCANEADO (QR) ─────────────────── */
 function renderProductLanding() {
   const bike = AppState.selectedBike;
@@ -2940,6 +3153,7 @@ function renderProductLanding() {
     <span class="product-spec-chip">${bike.cc}</span>
     <span class="product-spec-chip">${bike.hp}</span>
     <span class="product-spec-chip">${bike.km}</span>`;
+  $('landBikeCode').textContent = getProductDisplayCode(bike);
   $('landBikePrice').textContent = formatCOP(bike.precio);
 
   const cuota = Math.round(bike.precio / 30);
@@ -3004,6 +3218,7 @@ function renderBikesCatalog(mode) {
 
     card.onclick = () => {
       AppState.selectedBike = bike;
+      hideBarcodeStatus();
       calculateFinancials();
       renderProductLanding();
       renderBikesCatalog('picker');
@@ -3072,6 +3287,7 @@ function updateScreen2Plan() {
   $('previewBikeBrand').textContent = bike.marca;
   $('previewBikeModel').textContent = bike.modelo;
   $('previewBikeSpecs').textContent = `${bike.cc} · ${bike.hp} · ${bike.km}`;
+  $('previewBikeCode').textContent = getProductDisplayCode(bike);
   $('previewBikePrice').textContent = formatCOP(bike.precio);
 
   calculateFinancials();
@@ -3882,6 +4098,7 @@ function attachFormValidationListeners() {
 
 /* ─── INICIALIZACIÓN ──────────────────────────────────────── */
 function initSimulator() {
+  applyBarcodeFromUrl();
   buildGroupMembers();
   renderBikesCatalog('picker');
   renderProductLanding();

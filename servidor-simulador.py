@@ -26,6 +26,7 @@ import ssl
 import sys
 import unicodedata
 from datetime import datetime, timedelta, timezone
+from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import unquote, urlparse
 
@@ -407,6 +408,87 @@ MIME_TYPES = {
 }
 
 
+def _locate_static(rel_path):
+    """Devuelve (ruta, extensión, error). error es 403, 404 o None."""
+    root_real = os.path.realpath(ROOT)
+    full = os.path.realpath(os.path.join(root_real, rel_path))
+    if full != root_real and not full.startswith(root_real + os.sep):
+        return None, None, 403
+    if not os.path.isfile(full):
+        return None, None, 404
+    return full, os.path.splitext(full)[1].lower(), None
+
+
+def _status_payload():
+    return {
+        "ok": True,
+        "cv2": CV_AVAILABLE,
+        "cascade": CASCADE_AVAILABLE,
+        "message": _face_message or "Servicio disponible.",
+        "document_classifier": "openai_decisions",
+        "openai_configured": is_openai_configured(),
+        "endpoints": ["/api/validate-face", "/api/verificar-documento", "/api/status"],
+    }
+
+
+def _decode_image_request(payload):
+    """Extrae el JPEG en base64 del cuerpo JSON. Devuelve (jpeg, error)."""
+    if not isinstance(payload, dict):
+        return None, {"ok": False, "message": "JSON inválido."}
+    img_b64 = payload.get("image") or ""
+    if isinstance(img_b64, str) and img_b64.startswith("data:"):
+        img_b64 = img_b64.split(",", 1)[-1]
+    try:
+        jpeg = base64.b64decode(img_b64, validate=False)
+    except Exception:
+        return None, {"ok": False, "message": "Base64 inválido."}
+    if not jpeg:
+        return None, {"ok": False, "message": "Imagen vacía."}
+    return jpeg, None
+
+
+def _validate_face_response(jpeg):
+    """Respuesta de /api/validate-face. Devuelve (payload, código HTTP)."""
+    if not CV_AVAILABLE or not CASCADE_AVAILABLE:
+        return {
+            "ok": False,
+            "available": False,
+            "face_detected": False,
+            "message": _face_message or "El análisis facial no está disponible en este servidor.",
+        }, 200
+    try:
+        faces, msg = detect_faces_in_jpeg(jpeg)
+    except Exception as exc:  # noqa: BLE001
+        return {"ok": False, "face_detected": False, "message": str(exc)}, 500
+    return {
+        "ok": True,
+        "available": True,
+        "face_detected": faces > 0,
+        "faces": faces,
+        "person_detected": faces > 0,
+        "message": msg + " La prueba solo detecta la presencia de un rostro.",
+    }, 200
+
+
+def _document_response(payload, jpeg):
+    """Respuesta de /api/verificar-documento. Devuelve (payload, código HTTP)."""
+    try:
+        result = classify_document(
+            base64.b64encode(jpeg).decode("ascii"),
+            payload.get("mime_type", "image/jpeg"),
+        )
+    except ValueError as exc:
+        return {"ok": False, "available": True, "is_document": False, "message": str(exc)}, 400
+    except Exception as exc:  # noqa: BLE001
+        return {
+            "ok": False,
+            "available": False,
+            "is_document": False,
+            "message": "No se pudo clasificar la imagen con Decisions API: %s" % exc,
+        }, 502
+    return {"ok": True, "available": True, **result}, 200
+
+
 class SimuladorHandler(BaseHTTPRequestHandler):
     server_version = "MotoKaizenSim/1.0"
 
@@ -424,15 +506,13 @@ class SimuladorHandler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def _send_static(self, rel_path):
-        root_real = os.path.realpath(ROOT)
-        full = os.path.realpath(os.path.join(root_real, rel_path))
-        if full != root_real and not full.startswith(root_real + os.sep):
+        full, ext, error = _locate_static(rel_path)
+        if error == 403:
             self._send_json({"ok": False, "error": "Ruta no permitida"}, 403)
             return
-        if not os.path.isfile(full):
+        if error:
             self._send_json({"ok": False, "error": "No encontrado"}, 404)
             return
-        ext = os.path.splitext(full)[1].lower()
         ctype = MIME_TYPES.get(ext, "application/octet-stream")
         with open(full, "rb") as fh:
             data = fh.read()
@@ -455,15 +535,7 @@ class SimuladorHandler(BaseHTTPRequestHandler):
         parsed = urlparse(self.path)
         path = unquote(parsed.path)
         if path == "/api/status":
-            self._send_json({
-                "ok": True,
-                "cv2": CV_AVAILABLE,
-                "cascade": CASCADE_AVAILABLE,
-                "message": _face_message or "Servicio disponible.",
-                "document_classifier": "openai_decisions",
-                "openai_configured": is_openai_configured(),
-                "endpoints": ["/api/validate-face", "/api/verificar-documento", "/api/status"],
-            })
+            self._send_json(_status_payload())
             return
         if path == "/":
             self._send_static("index.html")
@@ -488,60 +560,19 @@ class SimuladorHandler(BaseHTTPRequestHandler):
         except Exception:
             self._send_json({"ok": False, "message": "JSON inválido."}, 400)
             return
-        img_b64 = payload.get("image") or ""
-        if isinstance(img_b64, str) and img_b64.startswith("data:"):
-            img_b64 = img_b64.split(",", 1)[-1]
-        try:
-            jpeg = base64.b64decode(img_b64, validate=False)
-        except Exception:
-            self._send_json({"ok": False, "message": "Base64 inválido."}, 400)
-            return
-        if not jpeg:
-            self._send_json({"ok": False, "message": "Imagen vacía."}, 400)
+        jpeg, error = _decode_image_request(payload)
+        if error:
+            self._send_json(error, 400)
             return
 
         if parsed.path == "/api/validate-face":
-            if not CV_AVAILABLE or not CASCADE_AVAILABLE:
-                self._send_json({
-                    "ok": False,
-                    "available": False,
-                    "face_detected": False,
-                    "message": _face_message or "El análisis facial no está disponible en este servidor.",
-                })
-                return
-            try:
-                faces, msg = detect_faces_in_jpeg(jpeg)
-            except Exception as exc:  # noqa: BLE001
-                self._send_json({"ok": False, "face_detected": False, "message": str(exc)}, 500)
-                return
-            self._send_json({
-                "ok": True,
-                "available": True,
-                "face_detected": faces > 0,
-                "faces": faces,
-                "person_detected": faces > 0,
-                "message": msg + " La prueba solo detecta la presencia de un rostro.",
-            })
+            result, code = _validate_face_response(jpeg)
+            self._send_json(result, code)
             return
 
         if parsed.path == "/api/verificar-documento":
-            try:
-                result = classify_document(
-                    base64.b64encode(jpeg).decode("ascii"),
-                    payload.get("mime_type", "image/jpeg"),
-                )
-            except ValueError as exc:
-                self._send_json({"ok": False, "available": True, "is_document": False, "message": str(exc)}, 400)
-                return
-            except Exception as exc:  # noqa: BLE001
-                self._send_json({
-                    "ok": False,
-                    "available": False,
-                    "is_document": False,
-                    "message": "No se pudo clasificar la imagen con Decisions API: %s" % exc,
-                }, 502)
-                return
-            self._send_json({"ok": True, "available": True, **result})
+            result, code = _document_response(payload, jpeg)
+            self._send_json(result, code)
             return
 
         self._send_json({"ok": False, "error": "Endpoint no existe"}, 404)
@@ -623,6 +654,89 @@ def main():
     except KeyboardInterrupt:
         print("\nServidor detenido.")
         httpd.server_close()
+
+
+# ---------------------------------------------------------------------------
+# Punto de entrada WSGI (Vercel y otros servidores compatibles)
+# ---------------------------------------------------------------------------
+def _wsgi_json(start_response, payload, code=200):
+    body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    start_response(
+        "%d %s" % (code, HTTPStatus(code).phrase),
+        [
+            ("Content-Type", "application/json; charset=utf-8"),
+            ("Content-Length", str(len(body))),
+            ("Cache-Control", "no-store"),
+        ],
+    )
+    return [body]
+
+
+def _wsgi_static(start_response, rel_path):
+    full, ext, error = _locate_static(rel_path)
+    if error == 403:
+        return _wsgi_json(start_response, {"ok": False, "error": "Ruta no permitida"}, 403)
+    if error:
+        return None  # el llamador decide si aplica el fallback a index.html
+    with open(full, "rb") as fh:
+        data = fh.read()
+    headers = [
+        ("Content-Type", MIME_TYPES.get(ext, "application/octet-stream")),
+        ("Content-Length", str(len(data))),
+    ]
+    if ext not in (".png", ".jpg", ".jpeg", ".gif", ".svg", ".webp", ".ico"):
+        headers.append(("Cache-Control", "no-store"))
+    start_response("200 OK", headers)
+    return [data]
+
+
+def app(environ, start_response):
+    """Aplicación WSGI con las mismas rutas que el servidor local.
+
+    Se declara a nivel de módulo (fuera de main) para que Vercel u otro
+    servidor WSGI pueda cargarla como la app del módulo.
+    """
+    method = (environ.get("REQUEST_METHOD") or "GET").upper()
+    path = unquote(environ.get("PATH_INFO") or "/")
+
+    if method in ("GET", "HEAD"):
+        if path == "/api/status":
+            return _wsgi_json(start_response, _status_payload())
+        if path.startswith("/api/"):
+            return _wsgi_json(start_response, {"ok": False, "error": "Endpoint no existe"}, 404)
+        rel = path.lstrip("/")
+        if not rel or rel.endswith("/"):
+            rel = rel + "index.html"
+        response = _wsgi_static(start_response, rel)
+        if response is None and not os.path.splitext(rel)[1]:
+            response = _wsgi_static(start_response, "index.html")
+        if response is None:
+            response = _wsgi_json(start_response, {"ok": False, "error": "No encontrado"}, 404)
+        return response
+
+    if method == "POST":
+        try:
+            length = int(environ.get("CONTENT_LENGTH") or 0)
+        except (TypeError, ValueError):
+            length = 0
+        if length <= 0 or length > MAX_BODY:
+            return _wsgi_json(start_response, {"ok": False, "message": "Cuerpo de solicitud inválido."}, 400)
+        try:
+            payload = json.loads(environ["wsgi.input"].read(length).decode("utf-8"))
+        except Exception:
+            return _wsgi_json(start_response, {"ok": False, "message": "JSON inválido."}, 400)
+        jpeg, error = _decode_image_request(payload)
+        if error:
+            return _wsgi_json(start_response, error, 400)
+        if path == "/api/validate-face":
+            result, code = _validate_face_response(jpeg)
+            return _wsgi_json(start_response, result, code)
+        if path == "/api/verificar-documento":
+            result, code = _document_response(payload, jpeg)
+            return _wsgi_json(start_response, result, code)
+        return _wsgi_json(start_response, {"ok": False, "error": "Endpoint no existe"}, 404)
+
+    return _wsgi_json(start_response, {"ok": False, "error": "Método no permitido"}, 405)
 
 
 if __name__ == "__main__":

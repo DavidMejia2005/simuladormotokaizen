@@ -1,0 +1,17 @@
+{
+  "builds": [
+    {
+      "src": "servidor-simulador.py",
+      "use": "@vercel/python",
+      "config": {
+        "maxDuration": 15
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "servidor-simulador.py"
+    }
+  ]
+}

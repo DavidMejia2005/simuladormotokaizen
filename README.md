@@ -14,6 +14,17 @@ Este simulador fue diseñado especialmente para **personas no técnicas** (clien
 3. ¡Listo! Se abrirá instantáneamente en tu navegador web predeterminado (Google Chrome, Microsoft Edge, etc.) sin necesidad de instalar Java, Docker o bases de datos.
    - **Nota:** abriéndolo como archivo (`file://`) no se puede usar la cámara ni el análisis de identidad; abre el servidor local para ejecutar las validaciones reales.
 
+### Auto-carga de producto desde el QR de Odoo
+El simulador lee el parámetro `barcode` de la URL y precarga la ficha del producto antes de que el cliente interactúe:
+
+```
+https://simulador-cliente-2.vercel.app/?barcode=SEL-42171082014822
+```
+
+- Si el código coincide con el `barcode` o el `default_code` del catálogo local, se muestran marca, modelo, código y precio a financiar del producto correspondiente.
+- Si no hay coincidencia, se conserva el código escaneado y se muestra una ficha de referencia del catálogo con un aviso visible, para que la simulación pueda continuar aunque no haya una API de productos disponible en Vercel.
+- Sin el parámetro `barcode`, el simulador mantiene su comportamiento normal con el producto por defecto.
+
 ### Opción 2: Con cámara real (Python + OpenCV) — Recomendada para la demo
 1. Asegúrate de tener **Python 3** instalado y ejecuta `python -m pip install -r requirements.txt`. Copia `.env.example` como `.env` y reemplaza `sk-proj-reemplazar` por tu clave real. El servidor carga `.env` automáticamente; la clave solo se usa en el backend y no se envía al navegador.
 2. Haz **doble clic** en **`servidor-local.bat`**.
