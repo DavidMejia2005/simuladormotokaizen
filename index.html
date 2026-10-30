@@ -2387,18 +2387,17 @@ main {
       <!-- Ficha del producto -->
       <div class="product-media">
         <div class="product-media-flag" id="landBikeImageFlag">📷 Imagen del producto</div>
-        <img id="landBikeImg" src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=900&q=80" alt="Motocicleta escaneada">
+        <img id="landBikeImg" src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=900&q=80" alt="Producto Escaneado">
       </div>
 
       <!-- Información del producto -->
       <div class="product-info-panel">
         <div>
-          <div class="bike-brand" id="landBikeBrand">YAMAHA</div>
-          <div class="bike-model" id="landBikeModel" style="margin-bottom: 0.5rem;">NMAX Connected 155</div>
+          <div class="bike-brand" id="landBikeBrand">ODOO</div>
+          <div class="bike-model" id="landBikeModel" style="margin-bottom: 0.5rem;">Producto Escaneado</div>
           <div class="product-specs-inline" id="landBikeSpecs">
-            <span class="product-spec-chip">155 cc</span>
-            <span class="product-spec-chip">15.1 HP</span>
-            <span class="product-spec-chip">140 km/gal</span>
+            <span class="product-spec-chip">Categoría: General</span>
+            <span class="product-spec-chip">Descripción: Producto Escaneado</span>
           </div>
         </div>
 
@@ -2444,7 +2443,7 @@ main {
             <div class="pay-method-head">
               <span class="pay-method-title">Pago de contado en tienda</span>
             </div>
-            <p class="method-sub">Cancelas el valor total en caja y te llevas la moto de inmediato.</p>
+            <p class="method-sub">Cancelas el valor total en caja y te llevas el producto de inmediato.</p>
             <div class="method-price" id="payMethodContadoPrice"></div>
           </div>
         </div>
@@ -2467,14 +2466,14 @@ main {
     </div>
 
     <div class="plan-split">
-      <!-- Resumen de Moto -->
+      <!-- Resumen del Producto -->
       <div class="plan-preview-box">
-        <img id="previewBikeImg" src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=700&q=80" alt="Motocicleta seleccionada">
+        <img id="previewBikeImg" src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&w=700&q=80" alt="Producto seleccionado">
         <div class="plan-preview-content">
           <div>
-            <div class="bike-brand" id="previewBikeBrand">YAMAHA</div>
-            <div class="bike-model" id="previewBikeModel" style="margin-bottom: 0.25rem;">NMAX Connected 155</div>
-            <div style="font-size: 0.85rem; color: var(--text-muted);" id="previewBikeSpecs">155 cc · 15.1 HP · 140 km/gal</div>
+            <div class="bike-brand" id="previewBikeBrand">ODOO</div>
+            <div class="bike-model" id="previewBikeModel" style="margin-bottom: 0.25rem;">Producto Escaneado</div>
+            <div style="font-size: 0.85rem; color: var(--text-muted);" id="previewBikeSpecs">Categoría · Descripción</div>
             <div style="font-size: 0.76rem; color: var(--text-muted); margin-top: 0.35rem;">Código: <strong id="previewBikeCode" style="color: var(--brand-navy);">—</strong></div>
           </div>
           <div style="border-top: 1px solid var(--border-light); padding-top: 1rem; display: flex; justify-content: space-between; align-items: baseline;">
@@ -2495,7 +2494,7 @@ main {
             <div class="freq-card active" id="cardFreqQuincenal" onclick="setFrequency('QUINCENAL')">
               <div class="freq-radio"></div>
               <div class="freq-card-name">Plan Quincenal ⚡</div>
-              <div class="freq-card-desc">Pago cada <strong>15 días</strong>. 30 cuotas en 15 meses de plazo. Entrega de motos acelerada.</div>
+              <div class="freq-card-desc">Pago cada <strong>15 días</strong>. 30 cuotas en 15 meses de plazo. Entrega acelerada de tu producto.</div>
             </div>
             <div class="freq-card" id="cardFreqMensual" onclick="setFrequency('MENSUAL')">
               <div class="freq-radio"></div>
@@ -2680,7 +2679,7 @@ main {
     <div class="section-banner">
       <div class="section-tag green">Paso 4 de 4 · Consorcio Conformado</div>
       <h2 class="section-title">¡Bienvenido a tu Grupo de Tandas!</h2>
-      <p class="section-desc">Has sido integrado en el <strong id="displayGroupCupo" style="color: var(--brand-navy);">Cupo #14</strong> junto a otros 29 titulares que aportan para adquirir la misma motocicleta <strong id="displayGroupMoto" style="color: var(--brand-orange);"></strong>.</p>
+      <p class="section-desc">Has sido integrado en el <strong id="displayGroupCupo" style="color: var(--brand-navy);">Cupo #14</strong> junto a otros 29 titulares que aportan para adquirir el mismo producto <strong id="displayGroupMoto" style="color: var(--brand-orange);"></strong>.</p>
     </div>
 
     <div class="email-notice-card" id="emailNoticeCard">
@@ -2718,7 +2717,7 @@ main {
       <div class="group-header-row">
         <div>
           <h3>Nómina Oficial de los 30 Integrantes</h3>
-          <p>Todos los miembros aportan su cuota en cada ciclo. Al cabo de 30 tandas, el 100% de los integrantes recibe su vehículo 0km.</p>
+          <p>Todos los miembros aportan su cuota en cada ciclo. Al cabo de 30 tandas, el 100% de los integrantes recibe su producto adquirido.</p>
         </div>
         </div>
 
@@ -2897,24 +2896,39 @@ let AppState = {
 };
 
 /* ─── UTILITARIOS ─────────────────────────────────────────── */
-const formatCOP = (num) => new Intl.NumberFormat('es-CO', {
-  style: 'currency',
-  currency: 'COP',
-  maximumFractionDigits: 0
-}).format(num);
+const formatCOP = (num) => formatMoney(num, 'COP');
 
 const formatMoney = (num, currency = 'COP') => {
   if (num === null || num === undefined || num === '' || num === false) return '—';
   const numeric = Number(num);
   if (!Number.isFinite(numeric)) return '—';
+  const rawCurrency = String(currency || 'COP').trim();
+  const curr = rawCurrency.toUpperCase() || 'COP';
+
+  // Si tiene decimales, o si la divisa es usualmente decimal (USD, EUR, etc.), o montos comerciales estándar (ej. $ 450.00)
+  // conservamos 2 decimales para reflejar con precisión el precio del producto y cuotas.
+  // Solo montos enteros muy altos en COP (>= 100.000 COP sin decimales) se muestran sin decimales.
+  const hasDecimals = numeric % 1 !== 0;
+  const isLargeIntegerCop = (curr === 'COP') && !hasDecimals && Math.abs(numeric) >= 100000;
+  const fractionDigits = isLargeIntegerCop ? 0 : 2;
+
   try {
     return new Intl.NumberFormat('es-CO', {
       style: 'currency',
-      currency: currency || 'COP',
-      maximumFractionDigits: 0
+      currency: curr,
+      minimumFractionDigits: fractionDigits,
+      maximumFractionDigits: fractionDigits
     }).format(numeric);
   } catch (error) {
-    return formatCOP(numeric);
+    try {
+      const formatted = new Intl.NumberFormat('es-CO', {
+        minimumFractionDigits: fractionDigits,
+        maximumFractionDigits: fractionDigits
+      }).format(numeric);
+      return rawCurrency === '$' ? `$ ${formatted}` : `${rawCurrency} ${formatted}`;
+    } catch (e) {
+      return `${rawCurrency} ${numeric.toFixed(fractionDigits)}`;
+    }
   }
 };
 
@@ -3144,7 +3158,7 @@ let barcodeRequestToken = 0;
 
 function getProductDisplayCode(bike) {
   if (!bike) return '—';
-  return bike.barcode || bike.default_code || bike.defaultCode || `MOTO-${bike.id}`;
+  return bike.barcode || bike.default_code || bike.defaultCode || `PROD-${bike.id}`;
 }
 
 function showBarcodeStatus(state, title, text) {
@@ -3218,11 +3232,12 @@ function buildProductSpecsHtml(bike) {
   }
 
   const chips = [];
+  if (bike.category) chips.push(`<span class="product-spec-chip"><strong>Categoría:</strong> ${escapeHtml(bike.category)}</span>`);
+  if (bike.description) chips.push(`<span class="product-spec-chip"><strong>Descripción:</strong> ${escapeHtml(bike.description.slice(0, 45))}</span>`);
   if (bike.cc) chips.push(`<span class="product-spec-chip">${escapeHtml(bike.cc)}</span>`);
   if (bike.hp) chips.push(`<span class="product-spec-chip">${escapeHtml(bike.hp)}</span>`);
   if (bike.km) chips.push(`<span class="product-spec-chip">${escapeHtml(bike.km)}</span>`);
-  if (!chips.length && bike.category) chips.push(`<span class="product-spec-chip">Categoría: ${escapeHtml(bike.category)}</span>`);
-  if (!chips.length && bike.uom) chips.push(`<span class="product-spec-chip">Unidad: ${escapeHtml(bike.uom)}</span>`);
+  if (bike.uom) chips.push(`<span class="product-spec-chip"><strong>Unidad:</strong> ${escapeHtml(bike.uom)}</span>`);
   return chips.join('');
 }
 
@@ -3369,7 +3384,8 @@ function renderProductLanding() {
 
   const numericPrice = Number(bike.precio);
   const hasPrice = Number.isFinite(numericPrice) && numericPrice > 0;
-  const cuota = hasPrice ? Math.round(numericPrice / 30) : 0;
+  const isLargeIntegerCop = (bike.currency === 'COP' || !bike.currency) && (numericPrice % 1 === 0) && numericPrice >= 100000;
+  const cuota = hasPrice ? (isLargeIntegerCop ? Math.round(numericPrice / 30) : Number((numericPrice / 30).toFixed(2))) : 0;
 
   $('landCuotaTeaser').textContent = hasPrice
     ? `Cuota desde ${formatMoney(cuota, bike.currency)} cada 15 o 30 días · Sin inicial · 0% de interés`
@@ -3430,10 +3446,11 @@ function acceptConvenio() {
     return;
   }
 
-  const cuota = Math.round(price / 30);
+  const isLargeIntegerCop = (bike.currency === 'COP' || !bike.currency) && (price % 1 === 0) && price >= 100000;
+  const cuota = isLargeIntegerCop ? Math.round(price / 30) : Number((price / 30).toFixed(2));
   showLoadingScreen({
     title: 'Activando convenio de financiamiento...',
-    subtitle: `Verificando el convenio MotoKaizen vigente con la tienda para la ${bike.marca} ${bike.modelo}.`,
+    subtitle: `Verificando el convenio MotoKaizen vigente con la tienda para ${bike.marca} ${bike.modelo}.`,
     duration: 1900,
     steps: [
       `Confirmando convenio activo con la tienda aliada`,
@@ -3452,8 +3469,13 @@ function renderBikesCatalog(mode) {
   container.innerHTML = '';
 
   MOTOS_DATA.forEach(bike => {
-    const cuotaCalculada = Math.round(bike.precio / 30);
+    const isLargeIntegerCop = (bike.currency === 'COP' || !bike.currency) && (bike.precio % 1 === 0) && bike.precio >= 100000;
+    const cuotaCalculada = isLargeIntegerCop ? Math.round(bike.precio / 30) : Number((bike.precio / 30).toFixed(2));
     const isSelected = AppState.selectedBike && AppState.selectedBike.id === bike.id;
+
+    const categoryLabel = escapeHtml(bike.category || bike.badge || 'General');
+    const descLabel = escapeHtml(bike.description || (bike.cc ? `${bike.cc} · ${bike.hp}` : '') || bike.badge || 'Disponible');
+    const refLabel = escapeHtml(bike.default_code || bike.barcode || `ID-${bike.id}`);
 
     const card = document.createElement('div');
     card.className = 'bike-card';
@@ -3471,28 +3493,28 @@ function renderBikesCatalog(mode) {
 
     card.innerHTML = `
       <div class="bike-img-header">
-        <span class="bike-badge">${bike.badge}</span>
-        <img src="${bike.img}" alt="${bike.modelo}" loading="lazy">
+        <span class="bike-badge">${escapeHtml(bike.badge)}</span>
+        <img src="${bike.img}" alt="${escapeHtml(bike.modelo)}" loading="lazy">
       </div>
       <div class="bike-content">
         <div>
-          <div class="bike-brand">${bike.marca}</div>
-          <div class="bike-model">${bike.modelo}</div>
+          <div class="bike-brand">${escapeHtml(bike.marca)}</div>
+          <div class="bike-model">${escapeHtml(bike.modelo)}</div>
           <div class="bike-specs-table">
-            <div class="spec-cell"><label>Cilindraje</label><strong>${bike.cc}</strong></div>
-            <div class="spec-cell"><label>Potencia</label><strong>${bike.hp}</strong></div>
-            <div class="spec-cell"><label>Rendimiento</label><strong>${bike.km}</strong></div>
+            <div class="spec-cell"><label>Categoría</label><strong>${categoryLabel}</strong></div>
+            <div class="spec-cell"><label>Descripción</label><strong>${descLabel}</strong></div>
+            <div class="spec-cell"><label>Referencia</label><strong>${refLabel}</strong></div>
           </div>
         </div>
         <div>
           <div class="bike-financial-row">
             <div class="price-contado">
               <label>Precio Contado</label>
-              <strong>${formatCOP(bike.precio)}</strong>
+              <strong>${formatMoney(bike.precio, bike.currency || 'COP')}</strong>
             </div>
             <div class="price-cuota">
               <label>Cuota Tanda (30 pagos)</label>
-              <strong>${formatCOP(cuotaCalculada)}</strong>
+              <strong>${formatMoney(cuotaCalculada, bike.currency || 'COP')}</strong>
             </div>
           </div>
           <button class="btn-select-bike">
@@ -3520,8 +3542,9 @@ function calculateFinancials() {
   }
 
   // Lógica de negocio MotoKaizen: 30 cuotas fijas directas
-  AppState.cuotaExacta = Math.round(precio / 30);
-  AppState.ahorroEstimado = Math.round(precio * 0.42);
+  const isLargeIntegerCop = (AppState.selectedBike.currency === 'COP' || !AppState.selectedBike.currency) && (precio % 1 === 0) && precio >= 100000;
+  AppState.cuotaExacta = isLargeIntegerCop ? Math.round(precio / 30) : Number((precio / 30).toFixed(2));
+  AppState.ahorroEstimado = isLargeIntegerCop ? Math.round(precio * 0.42) : Number((precio * 0.42).toFixed(2));
 }
 
 /* ─── PANTALLA 2: PLAN DE CUOTAS ──────────────────────────── */
@@ -3538,7 +3561,13 @@ function updateScreen2Plan() {
 
   const specsText = Array.isArray(bike.specs) && bike.specs.length
     ? bike.specs.map(spec => `${spec.label}: ${spec.value}`).join(' · ')
-    : [bike.cc, bike.hp, bike.km].filter(Boolean).join(' · ');
+    : [
+        bike.category ? `Categoría: ${bike.category}` : '',
+        bike.description ? `Descripción: ${bike.description.slice(0, 40)}` : '',
+        bike.cc,
+        bike.hp,
+        bike.km
+      ].filter(Boolean).join(' · ');
 
   $('previewBikeImg').src = bike.img || PRODUCT_IMAGE_PLACEHOLDER;
   $('previewBikeBrand').textContent = bike.marca || 'ODOO';
@@ -4269,7 +4298,7 @@ function updateScreen4Group() {
     : '—';
 
   $('emailNoticeAddress').textContent = AppState.client.email;
-  $('emailNoticeBody').textContent = `Adjuntamos el detalle del grupo ${AppState.group.code} y tu cupo #${AppState.group.meCupo} en el consorcio MotoKaizen. En un entorno productivo, un asesor se contactará contigo para coordinar la entrega de tu vehículo.`;
+  $('emailNoticeBody').textContent = `Adjuntamos el detalle del grupo ${AppState.group.code} y tu cupo #${AppState.group.meCupo} en el consorcio MotoKaizen. En un entorno productivo, un asesor se contactará contigo para coordinar la entrega de tu producto.`;
 
   const container = $('membersMosaicGrid');
   container.innerHTML = '';
